@@ -46,7 +46,7 @@ int column = 0;
 /* ------------------------- Functions prototypes -------------------------- */
 void yyerror(char const *s);
 
-void count(char* lexeme);
+void count(const char* lexeme);
 void comment(void);
 /* ------------------------------------------------------------------------- */
 %}
@@ -196,7 +196,7 @@ void comment(void)
 	int state = 0;
 	int IsTemrinated = 0;
 
-	while (!IsTemrinated && ((c = input()) != 0))
+	while (!IsTemrinated && ((c = yyinput()) != 0))
 	{
 		switch(state) 
 		{
@@ -233,7 +233,7 @@ void comment(void)
 	if(!IsTemrinated) yyerror("[ERROR]: unterminated comment\n");
 }
 
-void count(char* lexeme)
+void count(const char* lexeme)
 {
 	int i;
 

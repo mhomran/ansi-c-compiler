@@ -8,8 +8,8 @@ TARGET = compiler
 all:
 	mkdir -p $(BUILD)
 	bison -v -d parser.y -o $(BUILD)/parser.cc
-	flex -o$(BUILD)/lexer.c lexer.l 
-	$(CC) -c $(BUILD)/lexer.c -o $(BUILD)/lexer.o
+	flex -o$(BUILD)/lexer.cc lexer.l 
+	$(CXX) -c $(BUILD)/lexer.cc -o $(BUILD)/lexer.o
 	$(CXX) $(BUILD)/lexer.o $(BUILD)/parser.cc compiler.cc -o $(BUILD)/${TARGET}.exe
 
 .PHONY: test
@@ -19,3 +19,7 @@ ifndef INPUT
 else
 	./$(BUILD)/${TARGET}.exe < ${TEST}/$(INPUT)
 endif
+
+.PHONY: clean
+clean:
+	rm -rf build

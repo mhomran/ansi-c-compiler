@@ -44,11 +44,8 @@ extern char yytext[];
 /* ------------------------------------------------------------------------- */
 
 /* ------------------------- Functions prototypes -------------------------- */
-extern "C" // important for the integeration with C++
-{
 int yylex(void);
 void yyerror (char const *s);
-}
 /* ------------------------------------------------------------------------- */
 %}
 
