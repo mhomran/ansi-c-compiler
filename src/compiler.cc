@@ -11,10 +11,12 @@
 
 /* ------------------------------- includes -------------------------------- */
 #include <iostream>
+#include "tree/tree.h"
 /* ------------------------------------------------------------------------- */
 
 /* ------------------------- Functions prototypes -------------------------- */
 int yyparse (void);
+Node* getParseTree ();
 /* ------------------------------------------------------------------------- */
 
 /* ------------------------- Functions Definitions ------------------------- */
@@ -27,14 +29,19 @@ main(void)
   ret = yyparse();
   ParseError = 0 != ret;
 
-  if(ParseError)
-    {
-      std::cout << "[ERROR]: Parser Failed" << std::endl;
-    }
-  else
-    {
-      std::cout << "[INFO]: Parser Success" << std::endl;
-    }
+  std::cout << std::endl;
+  
+  if(ParseError) {
+    std::cout << "[ERROR]: Parser Failed" << std::endl;
+  }
+  else {
+    std::cout << "[INFO]: Parser Success" << std::endl;
+
+    Node* parseTree = getParseTree();
+    Node::PrintParseTree(parseTree);
+    
+    Node::DeleteTree(parseTree);
+  }
 	
 	return 0;
 }
