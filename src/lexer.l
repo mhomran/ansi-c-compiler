@@ -34,7 +34,7 @@ FLOATING_SUFFIX         [flFL]
 
 %{
 /* ------------------------------- Includes -------------------------------- */
-#include <stdio.h>
+#include <cstring>
 #include "parser.hh"
 /* ------------------------------------------------------------------------- */
 
@@ -95,7 +95,7 @@ void comment(void);
 
  /* ------------------------ Variables and Constants ------------------------ */
  /* Identifiers */
-{L}({L}|{DIGIT})*		{ count("identifier"); return(IDENTIFIER); }
+{L}({L}|{DIGIT})*		{ strcpy(yylval.TreeNode.name, yytext); count("identifier"); return(IDENTIFIER); }
  
  /* integer Constant */
 {INTEGER_CONSTANT}		{ count("integer_constant"); return(CONSTANT); }
