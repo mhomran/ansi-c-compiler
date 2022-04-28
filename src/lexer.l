@@ -9,27 +9,27 @@
 /* ------------------------------------------------------------------------- */
 
 /* ------------------------- Tokens Definitions ---------------------------- */
-L			[a-zA-Z_]
+L [a-zA-Z_]
 
 /* Integer Constant */
-INTEGER_CONSTANT	({DEC_CONST}|{OCT_CONST}|{HEX_CONST}){INTEGER_SUFFIX}?
-DIGIT			[0-9]
-DEC_CONST 		(0|[1-9]{DIGIT}*)
-OCT			[0-7]
-OCT_CONST		0{OCT}+
-HEX			[a-fA-F0-9]
-HEX_CONST		0[xX]{HEX}+
-INTEGER_SUFFIX		[ulUS]
+INTEGER_CONSTANT  ({DEC_CONST}|{OCT_CONST}|{HEX_CONST}){INTEGER_SUFFIX}?
+DIGIT             [0-9]
+DEC_CONST         (0|[1-9]{DIGIT}*)
+OCT               [0-7]
+OCT_CONST         0{OCT}+
+HEX               [a-fA-F0-9]
+HEX_CONST         0[xX]{HEX}+
+INTEGER_SUFFIX    [ulUS]
 
 /* Floating point constant */
-FLOATING_CONSTANT 	{FLOATING_CONSTANT1}|{FLOATING_CONSTANT2}
-FLOATING_CONSTANT1 	({FRACTIONAL_CONSTANT}{EXPONENT_PART}?{FLOATING_SUFFIX}?)
-FLOATING_CONSTANT2	({DIGIT_SEQ}{EXPONENT_PART}{FLOATING_SUFFIX}?)
-FRACTIONAL_CONSTANT	(({DIGIT_SEQ}?\.{DIGIT_SEQ})|({DIGIT_SEQ}\.))
-EXPONENT_PART		([Ee]{SIGN}?{DIGIT}+)
-SIGN                    [+-]
-DIGIT_SEQ               {DIGIT}+
-FLOATING_SUFFIX         [flFL]
+FLOATING_CONSTANT   {FLOATING_CONSTANT1}|{FLOATING_CONSTANT2}
+FLOATING_CONSTANT1  ({FRACTIONAL_CONSTANT}{EXPONENT_PART}?{FLOATING_SUFFIX}?)
+FLOATING_CONSTANT2  ({DIGIT_SEQ}{EXPONENT_PART}{FLOATING_SUFFIX}?)
+FRACTIONAL_CONSTANT (({DIGIT_SEQ}?\.{DIGIT_SEQ})|({DIGIT_SEQ}\.))
+EXPONENT_PART       ([Ee]{SIGN}?{DIGIT}+)
+SIGN                [+-]
+DIGIT_SEQ           {DIGIT}+
+FLOATING_SUFFIX     [flFL]
 /* ------------------------------------------------------------------------- */
 
 %{
@@ -46,7 +46,7 @@ int column = 0;
 /* ------------------------- Functions prototypes -------------------------- */
 void yyerror(char const *s);
 
-void count(const char* lexeme);
+void echo(const char* lexeme);
 void comment(void);
 /* ------------------------------------------------------------------------- */
 %}
@@ -65,113 +65,117 @@ void comment(void);
 
  /* --------------------------- Reserved keywords --------------------------- */
  /* If-then-else statement */
-"if"			{ count("if"); return(IF); }
-"else"			{ count("else"); return(ELSE); }
+"if"        { echo("if"); return(IF); }
+"else"      { echo("else"); return(ELSE); }
  /* while, repeat-until, for loops */
-"do"			{ count("do"); return(DO); }
-"while"			{ count("while"); return(WHILE); }
-"for"			{ count("for"); return(FOR); }
-"continue"		{ count("continue"); return(CONTINUE); }
-"break"			{ count("break"); return(BREAK); }
+"do"        { echo("do"); return(DO); }
+"while"     { echo("while"); return(WHILE); }
+"for"       { echo("for"); return(FOR); }
+"continue"  { echo("continue"); return(CONTINUE); }
+"break"     { echo("break"); return(BREAK); }
  /* switch statement */
-"switch"		{ count("switch"); return(SWITCH); }
-"case"			{ count("case"); return(CASE); }
-"default"		{ count("default"); return(DEFAULT); }
-":"			{ count(":"); return(':'); }
+"switch"    { echo("switch"); return(SWITCH); }
+"case"      { echo("case"); return(CASE); }
+"default"   { echo("default"); return(DEFAULT); }
+":"         { echo(":"); return(':'); }
  /* data types */
-"void"			{ count("void"); return(VOID); }
-"char"			{ count("char"); return(CHAR); }
-"short"			{ count("short"); return(SHORT); }
-"int"			{ count("int"); return(INT); }
-"long"			{ count("long"); return(LONG); }
-"float"			{ count("float"); return(FLOAT); }
-"double"		{ count("double"); return(DOUBLE); }
+"void"      { echo("void"); return(VOID); }
+"char"      { echo("char"); return(CHAR); }
+"short"     { echo("short"); return(SHORT); }
+"int"       { echo("int"); return(INT); }
+"long"      { echo("long"); return(LONG); }
+"float"     { echo("float"); return(FLOAT); }
+"double"    { echo("double"); return(DOUBLE); }
  /* constants */
-"const"			{ count("const"); return(CONST); }
+"const"     { echo("const"); return(CONST); }
  /* functions */
-"return"		{ count("return"); return(RETURN); }
-","			{ count(","); return(','); }
+"return"    { echo("return"); return(RETURN); }
+","         { echo(","); return(','); }
  /* ------------------------------------------------------------------------- */
 
  /* ------------------------ Variables and Constants ------------------------ */
  /* Identifiers */
-{L}({L}|{DIGIT})*		{ strcpy(yylval.TreeNode.name, yytext); count("identifier"); return(IDENTIFIER); }
+{L}({L}|{DIGIT})*     { 
+	strcpy(yylval.TreeNode.name, yytext); 
+	echo("identifier"); 
+	return(IDENTIFIER); 
+}
  
  /* integer Constant */
-{INTEGER_CONSTANT}		{ count("integer_constant"); return(CONSTANT); }
+{INTEGER_CONSTANT}    { echo("integer_constant"); return(CONSTANT); }
  /* Floating Constant */
-{FLOATING_CONSTANT}		{ count("floating_constant"); return(CONSTANT); }
+{FLOATING_CONSTANT}   { echo("floating_constant"); return(CONSTANT); }
  /* Char Constant (simplified) */
-'([a-zA-Z]|{DIGIT})'		{ count("char"); return(CONSTANT); }			
+'([a-zA-Z]|{DIGIT})'  { echo("char"); return(CONSTANT); }			
  
  /* string literals */
  /* L?"(escaped char or char which is not quote or a backslash)" */
-L?\"(\\.|[^\\"])*\"		{ count("string_literal"); return(STRING_LITERAL); }
+L?\"(\\.|[^\\"])*\"   { echo("string_literal"); return(STRING_LITERAL); }
  /* ------------------------------------------------------------------------- */
 
  /* ------------------------- Assignment statements ------------------------- */
  
-"++"			{ count("++"); return(INC_OP); }
-"--"			{ count("--"); return(DEC_OP); }
-">>="			{ count(">>="); return(RIGHT_ASSIGN); }
-"<<="			{ count("<<="); return(LEFT_ASSIGN); }
-"+="			{ count("+="); return(ADD_ASSIGN); }
-"-="			{ count("-="); return(SUB_ASSIGN); }
-"*="			{ count("*="); return(MUL_ASSIGN); }
-"/="			{ count("/="); return(DIV_ASSIGN); }
-"%="			{ count("%="); return(MOD_ASSIGN); }
-"&="			{ count("&="); return(AND_ASSIGN); }
-"^="			{ count("^="); return(XOR_ASSIGN); }
-"|="			{ count("|="); return(OR_ASSIGN); }
-"="			{ count("="); return('='); }
+"++"    { echo("++"); return(INC_OP); }
+"--"    { echo("--"); return(DEC_OP); }
+">>="   { echo(">>="); return(RIGHT_ASSIGN); }
+"<<="   { echo("<<="); return(LEFT_ASSIGN); }
+"+="    { echo("+="); return(ADD_ASSIGN); }
+"-="    { echo("-="); return(SUB_ASSIGN); }
+"*="    { echo("*="); return(MUL_ASSIGN); }
+"/="    { echo("/="); return(DIV_ASSIGN); }
+"%="    { echo("%="); return(MOD_ASSIGN); }
+"&="    { echo("&="); return(AND_ASSIGN); }
+"^="    { echo("^="); return(XOR_ASSIGN); }
+"|="    { echo("|="); return(OR_ASSIGN); }
+"="     { echo("="); return('='); }
  /* ------------------------------------------------------------------------- */
 
  /* ------------------- Relational and Equality Operators ------------------- */
-"<="			{ count("<="); return(LE_OP); }
-">="			{ count(">="); return(GE_OP); }
-"=="			{ count("=="); return(EQ_OP); }
-"!="			{ count("!="); return(NE_OP); }
-"<"				{ count("<"); return('<'); }
-">"				{ count(">"); return('>'); }
+"<="    { echo("<="); return(LE_OP); }
+">="    { echo(">="); return(GE_OP); }
+"=="    { echo("=="); return(EQ_OP); }
+"!="    { echo("!="); return(NE_OP); }
+"<"	    { echo("<"); return('<'); }
+">"	    { echo(">"); return('>'); }
  /* ------------------------------------------------------------------------- */
 
  /* ------------------------------- Semicolon ------------------------------- */
-";"			{ count(";"); return(';'); }
+";"			{ echo(";"); return(';'); }
  /* ------------------------------------------------------------------------- */
 
  /* ------------------------------ Punctuators ------------------------------ */
-"["			{ count("["); return('['); }
-"]"			{ count("]"); return(']'); }
-"("			{ count("("); return('('); }
-")"			{ count(")"); return(')'); }
-"{"			{ count("{"); return('{'); }
-"}"			{ count("}"); return('}'); }
+"["     { echo("["); return('['); }
+"]"     { echo("]"); return(']'); }
+"("     { echo("("); return('('); }
+")"     { echo(")"); return(')'); }
+"{"     { echo("{"); return('{'); }
+"}"     { echo("}"); return('}'); }
  /* ------------------------------------------------------------------------- */
 
  /* ----------------- Mathematical and logical expressions ------------------ */
  /* Logical */
-"&&"			{ count("&&"); return(AND_OP); }
-"||"			{ count("||"); return(OR_OP); }
-"!"			{ count("!"); return('!'); }
+"&&"    { echo("&&"); return(AND_OP); }
+"||"    { echo("||"); return(OR_OP); }
+"!"     { echo("!"); return('!'); }
  /* bit-wise */
-"&"			{ count("&"); return('&'); }
-"|"			{ count("|"); return('|'); }
-"~"			{ count("~"); return('~'); }
-"^"			{ count("^"); return('^'); }
-">>"			{ count(">>"); return(RIGHT_OP); }
-"<<"			{ count("<<"); return(LEFT_OP); }
+"&"     { echo("&"); return('&'); }
+"|"     { echo("|"); return('|'); }
+"~"     { echo("~"); return('~'); }
+"^"     { echo("^"); return('^'); }
+">>"    { echo(">>"); return(RIGHT_OP); }
+"<<"    { echo("<<"); return(LEFT_OP); }
  /* Arithmetic */
-"-"			{ count("-"); return('-'); }
-"+"			{ count("+"); return('+'); }
-"*"			{ count("*"); return('*'); }
-"/"			{ count("/"); return('/'); }
-"%"			{ count("%"); return('%'); }
+"-"     { echo("-"); return('-'); }
+"+"     { echo("+"); return('+'); }
+"*"     { echo("*"); return('*'); }
+"/"     { echo("/"); return('/'); }
+"%"     { echo("%"); return('%'); }
  /* ------------------------------------------------------------------------- */
 
  /* ----------------------------- White spaces ------------------------------ */
-[ \t\v\f]		{ count("white_space"); }
-[\n\r]			{ count("white_space"); line++; }
-.			{ count("bad_char"); }
+[ \t\v\f] { echo("white_space"); }
+[\n\r]    { echo("white_space"); line++; }
+.         { echo("bad_char"); }
  /* ------------------------------------------------------------------------- */
 
  /* ------------------------------------------------------------------------- */
@@ -233,10 +237,11 @@ void comment(void)
 	if(!IsTemrinated) yyerror("[ERROR]: unterminated comment\n");
 }
 
-void count(const char* lexeme)
+void echo(const char* lexeme)
 {
 	int i;
 
+	//Update the column pointer
 	for (i = 0; yytext[i] != '\0'; i++)
 		if (yytext[i] == '\n')
 			column = 0;
