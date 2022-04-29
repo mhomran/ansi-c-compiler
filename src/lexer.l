@@ -71,11 +71,10 @@ void comment(void);
 "do"        { echo("do"); return(DO); }
 "while"     { echo("while"); return(WHILE); }
 "for"       { echo("for"); return(FOR); }
-"continue"  { echo("continue"); return(CONTINUE); }
-"break"     { echo("break"); return(BREAK); }
  /* switch statement */
 "switch"    { echo("switch"); return(SWITCH); }
 "case"      { echo("case"); return(CASE); }
+"break"     { echo("break"); return(BREAK); }
 "default"   { echo("default"); return(DEFAULT); }
 ":"         { echo(":"); return(':'); }
  /* data types */
@@ -102,11 +101,20 @@ void comment(void);
 }
  
  /* integer Constant */
-{INTEGER_CONSTANT}    { echo("integer_constant"); return(CONSTANT); }
+{INTEGER_CONSTANT}    { 
+	strcpy(yylval.TreeNode.name, yytext); 
+	echo("integer_constant"); return(CONSTANT); 
+}
  /* Floating Constant */
-{FLOATING_CONSTANT}   { echo("floating_constant"); return(CONSTANT); }
+{FLOATING_CONSTANT}   { 
+	strcpy(yylval.TreeNode.name, yytext); 
+	echo("floating_constant"); return(CONSTANT); 
+}
  /* Char Constant (simplified) */
-'([a-zA-Z]|{DIGIT})'  { echo("char"); return(CONSTANT); }			
+'([a-zA-Z]|{DIGIT})'  { 
+	strcpy(yylval.TreeNode.name, yytext); 
+	echo("char"); return(CONSTANT); 
+}			
  
  /* string literals */
  /* L?"(escaped char or char which is not quote or a backslash)" */
@@ -115,8 +123,6 @@ L?\"(\\.|[^\\"])*\"   { echo("string_literal"); return(STRING_LITERAL); }
 
  /* ------------------------- Assignment statements ------------------------- */
  
-"++"    { strcpy(yylval.TreeNode.name, yytext); echo("++"); return(INC_OP); }
-"--"    { strcpy(yylval.TreeNode.name, yytext); echo("--"); return(DEC_OP); }
 ">>="   { strcpy(yylval.TreeNode.name, yytext); echo(">>="); return(RIGHT_ASSIGN); }
 "<<="   { strcpy(yylval.TreeNode.name, yytext); echo("<<="); return(LEFT_ASSIGN); }
 "+="    { strcpy(yylval.TreeNode.name, yytext); echo("+="); return(ADD_ASSIGN); }

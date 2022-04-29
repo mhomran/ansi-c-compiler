@@ -9,7 +9,7 @@
  * 
  */
 
-int main(void) {
-  int e1, e2, e3, e4;
+int main() {
+  int e1; int e2; int e3; int e4;
   if(e1)if(e2)e3;else e4;
 }

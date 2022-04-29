@@ -15,7 +15,7 @@ int a;
 
 /* ------------------------- Functions prototypes -------------------------- */
 int foo(int a, int b, int c);
-int yoo(void);
+int yoo();
 /* ------------------------------------------------------------------------- */
 
 /* ------------------------- Functions Definitions ------------------------- */
@@ -26,7 +26,7 @@ int yoo(void);
  * @return int 
  */
 int 
-yoo(void)
+yoo()
 {
     return 2022;
 }
@@ -36,18 +36,20 @@ int yooHey() {
 }
 
 int 
-main(void) {
+main() {
     /* ------------------------- 
     Local Variables declaration 
     ------------------------- */
     const int x;
     int y;
-    int looper1, looper2;
+    int looper1;
     float z;
     const int x_init = 2022;
     int y_init = 2022;
     float z_init = 2022;
     
+    int a1; int a2; int a3; int a4; int a5;
+
     /* Char */
     int c = 'c';
     
@@ -102,18 +104,18 @@ main(void) {
     else { y = 2;}
 
     /* loops */
-    for(looper1 = 0; looper1 < 4; looper1++) {
+    for(looper1 = 0; looper1 < 4; looper1 += 1) {
         looper1;
     }
     looper1 = 0;
     while(looper1 < 4){
         looper1;
-        looper1++;
+        looper1+=1;
     }
     looper1 = 0;
     do{
         looper1;
-        looper1++;
+        looper1+=1;
     } while(!(looper1 >= 4));
 
     /* switch statement */
@@ -141,6 +143,8 @@ main(void) {
     foo(x, y, z);
 
     /* expressions */
-    a = (a + a) * a / a;
+    a = (a1 + a2) * a3 / a4;
+
+    return 0;
 }
 /* ------------------------------------------------------------------------- */

@@ -13,10 +13,10 @@
 %token IDENTIFIER CONSTANT STRING_LITERAL
 
 // unary operators
-%token INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
+%token  LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP 
 
-// Assignment statements
+// Assignment stmts
 %token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
 %token XOR_ASSIGN OR_ASSIGN
@@ -24,9 +24,9 @@
 // Data types
 %token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOID
 
-// If-then-else statement, while loops, repeat-until loops,
-// for loops, switch statement
-%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR CONTINUE BREAK RETURN
+// If-then-else stmt, while loops, repeat-until loops,
+// for loops, switch stmt
+%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR BREAK RETURN
 /* ------------------------------------------------------------------------- */ 
 
 //start symbol
@@ -62,18 +62,17 @@ Node* getParseTree ();
 	} TreeNode;
 }
 
-%type <TreeNode> primary_expression postfix_expression argument_expression_list
-%type <TreeNode> unary_expression unary_operator type_specifier direct_declarator
-%type <TreeNode> mul_div add_sub shift relation equal_not_equal bitwise_and
-%type <TreeNode> xor bitwise_or and or assign expression
-%type <TreeNode> declaration declaration_specifiers init_declarator_list
-%type <TreeNode> parameter_list parameter_declaration 
-%type <TreeNode> assignment_expression statement init_declarator
-%type <TreeNode> labeled_statement block declaration_list
-%type <TreeNode> statement_list expression_statement selection_statement
-%type <TreeNode> iteration_statement jump_statement translation_unit
-%type <TreeNode> external_declaration function_definition 
-%type <TreeNode> MIF UIF other_statement
+%type <TreeNode> function_global_var c_file
+%type <TreeNode> basic_element function_call
+%type <TreeNode> unary_operation unary_operator datatype 
+%type <TreeNode> declaration var_const function_signature
+%type <TreeNode> expression_stmt declarations
+%type <TreeNode> return parameters arguments
+%type <TreeNode> mul_div_mod add_sub shift relation equal_not_equal bitwise_and
+%type <TreeNode> xor bitwise_or and or assign_operator expression
+%type <TreeNode> switch switch_body block loop
+%type <TreeNode> assignment stmts stmt other_stmt
+%type <TreeNode> MIF UIF 
 
 /* ------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------- */
@@ -86,70 +85,54 @@ Node* getParseTree ();
 
 
 /* Precedence decreases as you go down */
-primary_expression
+basic_element
 	: IDENTIFIER { $$.nd = new Node($$.name); }
 	| CONSTANT { $$.nd = new Node("constant"); }
 	| STRING_LITERAL { $$.nd = new Node("string literal"); }
 	| '(' expression ')' {
-		$$.nd = new Node("primary_expression");
+		$$.nd = new Node("basic_element");
 		$$.nd->insert(new Node("("))->insert($2.nd)->insert(new Node(")"));
 	}
 	;
 
-postfix_expression
-	: primary_expression { 
-		$$.nd = new Node("postfix_expression"); 
+function_call
+	: basic_element { 
+		$$.nd = new Node("function_call"); 
 		$$.nd->insert($1.nd);
 	}
-	| postfix_expression '(' ')' {
-		$$.nd = new Node("postfix_expression"); 
+	| function_call '(' ')' {
+		$$.nd = new Node("function_call"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("("));
 		$$.nd->insert(new Node(")"));
 	}
-	| postfix_expression '(' argument_expression_list ')' {
-		$$.nd = new Node("postfix_expression"); 
+	| function_call '(' arguments ')' {
+		$$.nd = new Node("function_call"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("("));
 		$$.nd->insert($3.nd);
 		$$.nd->insert(new Node(")"));
 	}
-	| postfix_expression INC_OP {
-		$$.nd = new Node("postfix_expression"); 
-		$$.nd->insert($1.nd)->insert(new Node("++"));
-	}
-	| postfix_expression DEC_OP {
-		$$.nd = new Node("postfix_expression"); 
-		$$.nd->insert($1.nd)->insert(new Node("--"));
-	}
 	;
 
-argument_expression_list
-	: assignment_expression {
-		$$.nd = new Node ("argument_expression_list");
+arguments
+	: assignment {
+		$$.nd = new Node ("arguments");
 		$$.nd->insert($1.nd);
 	}
-	| argument_expression_list ',' assignment_expression {
-		$$.nd = new Node ("argument_expression_list");
+	| arguments ',' assignment {
+		$$.nd = new Node ("arguments");
 		$$.nd->insert($1.nd)->insert(new Node(","))->insert($3.nd);
 	}
 	;
 
-unary_expression
-	: postfix_expression {
-		$$.nd = new Node ("unary_expression");
+unary_operation
+	: function_call {
+		$$.nd = new Node ("unary_operation");
 		$$.nd->insert($1.nd);
 	}
-	| INC_OP unary_expression {
-		$$.nd = new Node ("unary_expression");
-		$$.nd->insert(new Node("++"))->insert($2.nd);
-	}
-	| DEC_OP unary_expression {
-		$$.nd = new Node ("unary_expression");
-		$$.nd->insert(new Node("--"))->insert($2.nd);
-	}
-	| unary_operator unary_expression {
-		$$.nd = new Node ("unary_expression");
+	| unary_operator unary_operation {
+		$$.nd = new Node ("unary_operation");
 		$$.nd->insert($1.nd)->insert($2.nd);
 	}
 	;
@@ -160,22 +143,22 @@ unary_operator
 	;
 
 
-mul_div 
-	: unary_expression { $$.nd = new Node("mul_div"); $$.nd->insert($1.nd); }
-	| mul_div '*' unary_expression {
-		$$.nd = new Node("mul_div"); 
+mul_div_mod 
+	: unary_operation { $$.nd = new Node("mul_div_mod"); $$.nd->insert($1.nd); }
+	| mul_div_mod '*' unary_operation {
+		$$.nd = new Node("mul_div_mod"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("*"));
 		$$.nd->insert($3.nd);
 	}
-	| mul_div '/' unary_expression {
-		$$.nd = new Node("mul_div"); 
+	| mul_div_mod '/' unary_operation {
+		$$.nd = new Node("mul_div_mod"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("/"));
 		$$.nd->insert($3.nd);
 	}
-	| mul_div '%' unary_expression {
-		$$.nd = new Node("mul_div"); 
+	| mul_div_mod '%' unary_operation {
+		$$.nd = new Node("mul_div_mod"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("%"));
 		$$.nd->insert($3.nd);
@@ -183,14 +166,14 @@ mul_div
 	;
 
 add_sub
-	: mul_div { $$.nd = new Node("add_sub"); $$.nd->insert($1.nd); }
-	| add_sub '+' mul_div {
+	: mul_div_mod { $$.nd = new Node("add_sub"); $$.nd->insert($1.nd); }
+	| add_sub '+' mul_div_mod {
 		$$.nd = new Node("add_sub"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("+"));
 		$$.nd->insert($3.nd);
 	}
-	| add_sub '-' mul_div {
+	| add_sub '-' mul_div_mod {
 		$$.nd = new Node("add_sub"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("-"));
@@ -308,15 +291,15 @@ or
 	}
 	;
 
-assignment_expression
-	: or { $$.nd = new Node("assignment_expression"); $$.nd->insert($1.nd); }
-	| unary_expression assign assignment_expression {
-		$$.nd = new Node("assignment_expression"); 
+assignment
+	: or { $$.nd = new Node("assignment"); $$.nd->insert($1.nd); }
+	| unary_operation assign_operator assignment {
+		$$.nd = new Node("assignment"); 
 		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd);
 	}
 	;
 
-assign
+assign_operator
 	: '=' { $$.nd = new Node($$.name); $$.nd->insert(new Node("=")); }
 	| MUL_ASSIGN { $$.nd = new Node($$.name); }
 	| DIV_ASSIGN { $$.nd = new Node($$.name); }
@@ -331,8 +314,8 @@ assign
 	;
 
 expression
-	: assignment_expression { $$.nd = new Node("expression"); $$.nd->insert($1.nd); }
-	| expression ',' assignment_expression {
+	: assignment { $$.nd = new Node("expression"); $$.nd->insert($1.nd); }
+	| expression ',' assignment {
 		$$.nd = new Node("expression");
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(","));
@@ -341,105 +324,72 @@ expression
 	;
 
 declaration
-	: declaration_specifiers ';' {
+	: var_const IDENTIFIER';' {
 		$$.nd = new Node("declaration");
 		$$.nd->insert($1.nd);
+		$$.nd->insert(new Node($$.name));
 		$$.nd->insert(new Node(";"));
 	}
-	| declaration_specifiers init_declarator_list ';' {
+	| var_const IDENTIFIER '=' assignment ';' {
 		$$.nd = new Node("declaration");
 		$$.nd->insert($1.nd);
-		$$.nd->insert($2.nd);
+		$$.nd->insert(new Node($$.name));
+		$$.nd->insert(new Node("="));
+		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node(";"));
 	}
 	;
 
-declaration_specifiers
-	: type_specifier {
-		$$.nd = new Node("declaration_specifiers");
+var_const
+	: datatype {
+		$$.nd = new Node("var_const");
 		$$.nd->insert($1.nd);
 	}
-	| CONST type_specifier {
-		$$.nd = new Node("declaration_specifiers");
+	| CONST datatype {
+		$$.nd = new Node("var_const");
 		$$.nd->insert(new Node("const"));
 	}
 	;
 
-init_declarator_list
-	: init_declarator { $$.nd = new Node("init_declarator_list"); $$.nd->insert($1.nd); }
-	| init_declarator_list ',' init_declarator {
-		$$.nd = new Node("init_declarator_list");
-		$$.nd->insert($1.nd)->insert(new Node(","))->insert($3.nd);
-	}
+datatype
+	: VOID { $$.nd = new Node("datatype"); $$.nd->insert(new Node("void")); }
+	| CHAR { $$.nd = new Node("datatype"); $$.nd->insert(new Node("char")); }
+	| SHORT { $$.nd = new Node("datatype"); $$.nd->insert(new Node("short")); }
+	| INT { $$.nd = new Node("datatype"); $$.nd->insert(new Node("int")); }
+	| LONG { $$.nd = new Node("datatype"); $$.nd->insert(new Node("long")); }
+	| FLOAT { $$.nd = new Node("datatype"); $$.nd->insert(new Node("float")); }
+	| DOUBLE { $$.nd = new Node("datatype"); $$.nd->insert(new Node("double")); }
+	| SIGNED { $$.nd = new Node("datatype"); $$.nd->insert(new Node("signed")); }
+	| UNSIGNED { $$.nd = new Node("datatype"); $$.nd->insert(new Node("unsigned")); }
 	;
 
-init_declarator
-	: direct_declarator { $$.nd = new Node("init_declarator"); $$.nd->insert($1.nd); }
-	| direct_declarator '=' assignment_expression {
-		$$.nd = new Node("init_declarator");
-		$$.nd->insert($1.nd)->insert(new Node("="))->insert($3.nd);		
-	}
-	;
 
-type_specifier
-	: VOID { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("void")); }
-	| CHAR { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("char")); }
-	| SHORT { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("short")); }
-	| INT { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("int")); }
-	| LONG { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("long")); }
-	| FLOAT { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("float")); }
-	| DOUBLE { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("double")); }
-	| SIGNED { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("signed")); }
-	| UNSIGNED { $$.nd = new Node("type_specifier"); $$.nd->insert(new Node("unsigned")); }
-	;
-
-direct_declarator
-	: IDENTIFIER { $$.nd = new Node("direct_declarator"); $$.nd->insert(new Node($$.name));}
-	| direct_declarator '(' parameter_list ')' {
-		$$.nd = new Node("direct_declarator"); 
-		$$.nd->insert($1.nd);
-		$$.nd->insert(new Node("("));
-		$$.nd->insert($3.nd);
-		$$.nd->insert(new Node(")"));		
-	}
-	| direct_declarator '(' ')' {
-		$$.nd = new Node("direct_declarator"); 
-		$$.nd->insert($1.nd);
-		$$.nd->insert(new Node("("));
-		$$.nd->insert(new Node(")"));		
-	}
-	;
-
-parameter_list
-	: parameter_declaration { $$.nd = new Node("parameter_list"); $$.nd->insert($1.nd); }
-	| parameter_list ',' parameter_declaration {
-		$$.nd = new Node("parameter_list"); 
+parameters
+	: var_const IDENTIFIER { 
+    $$.nd = new Node("parameters");
+    $$.nd->insert($1.nd); 
+    $$.nd->insert(new Node($$.name)); 
+  }
+	| parameters ',' var_const IDENTIFIER {
+		$$.nd = new Node("parameters"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(","));
 		$$.nd->insert($3.nd);
+    $$.nd->insert(new Node($$.name)); 
 	}
 	;
 
-parameter_declaration
-	: declaration_specifiers direct_declarator {
-		$$.nd = new Node("parameter_declaration");
-		$$.nd->insert($1.nd)->insert($2.nd);		
-	}
-	| declaration_specifiers { $$.nd = new Node("parameter_declaration"); $$.nd->insert($1.nd); }
+stmt
+	: MIF {$$.nd = new Node("stmt"); $$.nd->insert($1.nd); }
+  | UIF {$$.nd = new Node("stmt"); $$.nd->insert($1.nd); }
 	;
 
-statement
-	: MIF {$$.nd = new Node("statement"); $$.nd->insert($1.nd); }
-  | UIF {$$.nd = new Node("statement"); $$.nd->insert($1.nd); }
-	;
-
-other_statement
-	: block { $$.nd = new Node("statement"); $$.nd->insert($1.nd); }
-	| expression_statement { $$.nd = new Node("statement"); $$.nd->insert($1.nd);}
-	| jump_statement { $$.nd = new Node("statement"); $$.nd->insert($1.nd); }
-	| selection_statement { $$.nd = new Node("statement"); $$.nd->insert($1.nd);}
-  | labeled_statement { $$.nd = new Node("statement"); $$.nd->insert($1.nd);}
-	| iteration_statement { $$.nd = new Node("statement"); $$.nd->insert($1.nd);}
+other_stmt
+	: block { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); }
+	| expression_stmt { $$.nd = new Node("stmt"); $$.nd->insert($1.nd);}
+	| return { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); }
+	| switch { $$.nd = new Node("stmt"); $$.nd->insert($1.nd);}
+	| loop { $$.nd = new Node("stmt"); $$.nd->insert($1.nd);}
   ;
 
 MIF 
@@ -448,14 +398,14 @@ MIF
     $$.nd->insert(new Node("if"))->insert(new Node("("))->insert($3.nd);
     $$.nd->insert(new Node(")"))->insert($5.nd)->insert(new Node("else"))->insert($7.nd);
   }
-  | other_statement {
+  | other_stmt {
     $$.nd = new Node("MIF");
     $$.nd->insert($1.nd);
   }
   ;
 
 UIF 
-  : IF '(' expression ')' statement {
+  : IF '(' expression ')' stmt {
     $$.nd = new Node("UIF");
     $$.nd->insert(new Node("if"))->insert(new Node("("))->insert($3.nd);
     $$.nd->insert(new Node(")"))->insert($5.nd);
@@ -467,47 +417,25 @@ UIF
   }
   ;
 
-labeled_statement
-	: IDENTIFIER ':' block {
-		$$.nd = new Node("labeled_statement"); 
-		$$.nd->insert(new Node($$.name)); 
-		$$.nd->insert(new Node(":")); 
-		$$.nd->insert($3.nd); 
-	}
-	| CASE or ':' block {
-		$$.nd = new Node("labeled_statement"); 
-		$$.nd->insert(new Node("case")); 
-		$$.nd->insert($2.nd); 
-		$$.nd->insert(new Node(":")); 
-		$$.nd->insert($4.nd);
-	}
-	| DEFAULT ':' block {
-		$$.nd = new Node("labeled_statement"); 
-		$$.nd->insert(new Node("default")); 
-		$$.nd->insert(new Node(":")); 
-		$$.nd->insert($3.nd); 
-	}
-	;
-
 block
 	: '{' '}' {
 		$$.nd = new Node("block"); 
 		$$.nd->insert(new Node("{")); 
 		$$.nd->insert(new Node("}")); 
 	}
-	| '{' statement_list '}' {
+	| '{' stmts '}' {
 		$$.nd = new Node("block"); 
 		$$.nd->insert(new Node("{")); 
 		$$.nd->insert($2.nd); 
 		$$.nd->insert(new Node("}")); 		
 	}
-	| '{' declaration_list '}' {
+	| '{' declarations '}' {
 		$$.nd = new Node("block"); 
 		$$.nd->insert(new Node("{")); 
 		$$.nd->insert($2.nd); 
 		$$.nd->insert(new Node("}")); 		
 	}
-	| '{' declaration_list statement_list '}' {
+	| '{' declarations stmts '}' {
 		$$.nd = new Node("block"); 
 		$$.nd->insert(new Node("{")); 
 		$$.nd->insert($2.nd); 
@@ -516,52 +444,74 @@ block
 	}
 	;
 
-declaration_list
-	: declaration { $$.nd = new Node("declaration_list"); $$.nd->insert($1.nd); }
-	| declaration_list declaration {
-		$$.nd = new Node("declaration_list"); $$.nd->insert($1.nd)->insert($2.nd);
+declarations
+	: declaration { $$.nd = new Node("declarations"); $$.nd->insert($1.nd); }
+	| declarations declaration {
+		$$.nd = new Node("declarations"); $$.nd->insert($1.nd)->insert($2.nd);
 	}
 	;
 
-statement_list
-	: statement { $$.nd = new Node("statement_list"); $$.nd->insert($1.nd); }
-	| statement_list statement {
-		$$.nd = new Node("statement_list"); $$.nd->insert($1.nd)->insert($2.nd);
+stmts
+	: stmt { $$.nd = new Node("stmts"); $$.nd->insert($1.nd); }
+	| stmts stmt {
+		$$.nd = new Node("stmts"); $$.nd->insert($1.nd)->insert($2.nd);
 	}
 	;
 
-expression_statement
+expression_stmt
 	: ';' { 
-		$$.nd = new Node("expression_statement"); 
+		$$.nd = new Node("expression_stmt"); 
 		$$.nd->insert(new Node(";"));
 	}
 	| expression ';' {
-		$$.nd = new Node("expression_statement"); 
+		$$.nd = new Node("expression_stmt"); 
 		$$.nd->insert($1.nd)->insert(new Node(";"));
 	}
 	;
 
-selection_statement
-	: SWITCH '(' expression ')' block {
+switch_body
+  : CASE CONSTANT ':' block BREAK ';' switch_body {
+		$$.nd = new Node("labeled_stmt"); 
+		$$.nd->insert(new Node("case")); 
+		$$.nd->insert(new Node($$.name)); 
+		$$.nd->insert(new Node(":")); 
+		$$.nd->insert($4.nd);
+		$$.nd->insert(new Node("break")); 
+		$$.nd->insert(new Node(";")); 
+		$$.nd->insert($7.nd);
+	}
+	| DEFAULT ':' block BREAK ';' {
+		$$.nd = new Node("labeled_stmt"); 
+		$$.nd->insert(new Node("default")); 
+		$$.nd->insert(new Node(":")); 
+		$$.nd->insert($3.nd); 
+		$$.nd->insert(new Node("break")); 
+		$$.nd->insert(new Node(";")); 
+	}
+
+switch
+	: SWITCH '(' expression ')' '{' switch_body '}' {
 		$$.nd = new Node("switch"); 
 		$$.nd->insert(new Node("("));
 		$$.nd->insert($3.nd);
 		$$.nd->insert(new Node(")"));
-		$$.nd->insert($5.nd);
+		$$.nd->insert(new Node("{"));
+		$$.nd->insert($6.nd);
+		$$.nd->insert(new Node("}"));
 	}
 	;
 
-iteration_statement
+loop
 	: WHILE '(' expression ')' block {
-		$$.nd = new Node("iteration_statement"); 
+		$$.nd = new Node("loop"); 
 		$$.nd->insert(new Node("while"));
 		$$.nd->insert(new Node("("));
 		$$.nd->insert($3.nd);
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert($5.nd);
 	}
-	| DO statement WHILE '(' expression ')' ';' {
-		$$.nd = new Node("iteration_statement"); 
+	| DO stmt WHILE '(' expression ')' ';' {
+		$$.nd = new Node("loop"); 
 		$$.nd->insert(new Node("do"));
 		$$.nd->insert($2.nd);
 		$$.nd->insert(new Node("while"));
@@ -570,8 +520,8 @@ iteration_statement
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert(new Node(";"));
 	}
-	| FOR '(' expression_statement expression_statement ')' block {
-		$$.nd = new Node("iteration_statement"); 
+	| FOR '(' expression_stmt expression_stmt ')' block {
+		$$.nd = new Node("loop"); 
 		$$.nd->insert(new Node("for"));
 		$$.nd->insert(new Node("("));
 		$$.nd->insert($3.nd);
@@ -579,8 +529,8 @@ iteration_statement
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert($6.nd);
 	}
-	| FOR '(' expression_statement expression_statement expression ')' block {
-		$$.nd = new Node("iteration_statement"); 
+	| FOR '(' expression_stmt expression_stmt expression ')' block {
+		$$.nd = new Node("loop"); 
 		$$.nd->insert(new Node("for"));
 		$$.nd->insert(new Node("("));
 		$$.nd->insert($3.nd);
@@ -591,53 +541,59 @@ iteration_statement
 	}
 	;
 
-jump_statement
-	: CONTINUE ';' {		
-		$$.nd = new Node("jump_statement"); 
-		$$.nd->insert(new Node("continue"))->insert(new Node(";"));
+return
+  : RETURN ';' { 
+    $$.nd = new Node("return"); 
+    $$.nd->insert(new Node("return"))->insert(new Node(";")); 
 	}
-	| BREAK ';' {
-		$$.nd = new Node("jump_statement"); 
-		$$.nd->insert(new Node("BREAK"))->insert(new Node(";"));
-	}
-	| RETURN ';' { 
-		$$.nd = new Node("jump_statement"); 
-		$$.nd->insert(new Node("return"))->insert(new Node(";")); 
-	}
-	| RETURN expression ';' { 
-		$$.nd = new Node("jump_statement"); 
-		$$.nd->insert(new Node("return"))->insert($2.nd)->insert(new Node(";")); 
-	}
+  | RETURN expression ';' { 
+  	$$.nd = new Node("return"); 
+  	$$.nd->insert(new Node("return"))->insert($2.nd)->insert(new Node(";")); 
+  }
 	;
 
-program: translation_unit { gParseTree = $1.nd;}
+program: c_file { gParseTree = $1.nd;}
 
-translation_unit
-	: external_declaration {
-		$$.nd = new Node("translation_unit"); 
+c_file
+	: function_global_var {
+		$$.nd = new Node("c_file"); 
 		$$.nd->insert($1.nd);
 	}
-	| translation_unit external_declaration {
-		$$.nd = new Node("translation_unit"); 
+	| c_file function_global_var {
+		$$.nd = new Node("c_file"); 
 		$$.nd->insert($1.nd)->insert($2.nd);
 	}
 	;
 
-external_declaration
-	: function_definition { 
-		$$.nd = new Node("external_declaration"); 
-		$$.nd->insert($1.nd);
+function_global_var
+  : function_signature block {
+		$$.nd = new Node("function_definition"); 
+		$$.nd->insert($1.nd)->insert($2.nd);
 	}
+  | function_signature ';' {
+		$$.nd = new Node("function_definition"); 
+		$$.nd->insert($1.nd)->insert(new Node(";"));
+  }
 	| declaration { 
-		$$.nd = new Node("external_declaration"); 
+		$$.nd = new Node("function_global_var"); 
 		$$.nd->insert($1.nd);
 	}
 	;
 
-function_definition
-	: declaration_specifiers direct_declarator block {
-		$$.nd = new Node("function_definition"); 
-		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd);
+function_signature
+	: var_const IDENTIFIER '(' parameters ')' {
+		$$.nd = new Node("declarator"); 
+		$$.nd->insert($1.nd);
+		$$.nd->insert(new Node($$.name));
+		$$.nd->insert(new Node("("));		
+		$$.nd->insert($4.nd);
+		$$.nd->insert(new Node(")"));		
+	}
+	| var_const IDENTIFIER '(' ')' {
+		$$.nd = new Node("declarator"); 
+		$$.nd->insert($1.nd);
+		$$.nd->insert(new Node("("));
+		$$.nd->insert(new Node(")"));		
 	}
 	;
 
