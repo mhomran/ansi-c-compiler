@@ -11,7 +11,6 @@
 
 /* -------------------------- global variables ----------------------------- */
 int a;
-const b;
 /* ------------------------------------------------------------------------- */
 
 /* ------------------------- Functions prototypes -------------------------- */
@@ -32,6 +31,10 @@ yoo(void)
     return 2022;
 }
 
+int yooHey() {
+    return 2022;
+}
+
 int 
 main(void) {
     /* ------------------------- 
@@ -45,9 +48,8 @@ main(void) {
     int y_init = 2022;
     float z_init = 2022;
     
-    /* Char and string literals */
+    /* Char */
     int c = 'c';
-    char str[5] = "2022";
     
     /* ------------------------- 
     Business logic
@@ -116,13 +118,15 @@ main(void) {
 
     /* switch statement */
     switch(a){
-        case 0:
-        if(a == a) a = a;
-        if(a == a) a = a;
+        case 0: {
+            if(a == a) a = a;
+            if(a == a) a = a;
+        }
         break;
 
-        default:
-        /* DO NOTHING */
+        default: {
+            /* DO NOTHING */
+        }
         break;
     }
 
@@ -135,5 +139,8 @@ main(void) {
     /* Function Calls */
     yoo();
     foo(x, y, z);
+
+    /* expressions */
+    a = (a + a) * a / a;
 }
 /* ------------------------------------------------------------------------- */

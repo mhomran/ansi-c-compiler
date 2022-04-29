@@ -115,19 +115,19 @@ L?\"(\\.|[^\\"])*\"   { echo("string_literal"); return(STRING_LITERAL); }
 
  /* ------------------------- Assignment statements ------------------------- */
  
-"++"    { echo("++"); return(INC_OP); }
-"--"    { echo("--"); return(DEC_OP); }
-">>="   { echo(">>="); return(RIGHT_ASSIGN); }
-"<<="   { echo("<<="); return(LEFT_ASSIGN); }
-"+="    { echo("+="); return(ADD_ASSIGN); }
-"-="    { echo("-="); return(SUB_ASSIGN); }
-"*="    { echo("*="); return(MUL_ASSIGN); }
-"/="    { echo("/="); return(DIV_ASSIGN); }
-"%="    { echo("%="); return(MOD_ASSIGN); }
-"&="    { echo("&="); return(AND_ASSIGN); }
-"^="    { echo("^="); return(XOR_ASSIGN); }
-"|="    { echo("|="); return(OR_ASSIGN); }
-"="     { echo("="); return('='); }
+"++"    { strcpy(yylval.TreeNode.name, yytext); echo("++"); return(INC_OP); }
+"--"    { strcpy(yylval.TreeNode.name, yytext); echo("--"); return(DEC_OP); }
+">>="   { strcpy(yylval.TreeNode.name, yytext); echo(">>="); return(RIGHT_ASSIGN); }
+"<<="   { strcpy(yylval.TreeNode.name, yytext); echo("<<="); return(LEFT_ASSIGN); }
+"+="    { strcpy(yylval.TreeNode.name, yytext); echo("+="); return(ADD_ASSIGN); }
+"-="    { strcpy(yylval.TreeNode.name, yytext); echo("-="); return(SUB_ASSIGN); }
+"*="    { strcpy(yylval.TreeNode.name, yytext); echo("*="); return(MUL_ASSIGN); }
+"/="    { strcpy(yylval.TreeNode.name, yytext); echo("/="); return(DIV_ASSIGN); }
+"%="    { strcpy(yylval.TreeNode.name, yytext); echo("%="); return(MOD_ASSIGN); }
+"&="    { strcpy(yylval.TreeNode.name, yytext); echo("&="); return(AND_ASSIGN); }
+"^="    { strcpy(yylval.TreeNode.name, yytext); echo("^="); return(XOR_ASSIGN); }
+"|="    { strcpy(yylval.TreeNode.name, yytext); echo("|="); return(OR_ASSIGN); }
+"="     { strcpy(yylval.TreeNode.name, yytext); echo("="); return('='); }
  /* ------------------------------------------------------------------------- */
 
  /* ------------------- Relational and Equality Operators ------------------- */

@@ -9,4 +9,4 @@
  * 
  */
 
-const const int const int a;
+const int a;

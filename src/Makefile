@@ -7,7 +7,7 @@ TARGET = compiler
 .PHONY: all
 all:
 	mkdir -p $(BUILD)
-	bison -v -d parser.y -o $(BUILD)/parser.cc
+	bison -v -d -Wall parser.y -o $(BUILD)/parser.cc
 	flex -o$(BUILD)/lexer.cc lexer.l 
 	$(CXX) -c $(BUILD)/lexer.cc -o $(BUILD)/lexer.o
 	$(CXX) -c $(BUILD)/parser.cc -o $(BUILD)/parser.o

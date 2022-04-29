@@ -38,7 +38,7 @@ main(void)
     std::cout << "[INFO]: Parser Success" << std::endl;
 
     Node* parseTree = getParseTree();
-    Node::PrintParseTree(parseTree);
+    // Node::PrintParseTree(parseTree);
     
     Node::DeleteTree(parseTree);
   }
