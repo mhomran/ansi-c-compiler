@@ -10,7 +10,7 @@
 
 /* ------------------------- Tokens Definitions ---------------------------- */
 // Variables and Constants declaration
-%token IDENTIFIER CONSTANT STRING_LITERAL
+%token IDENTIFIER CONSTANT
 
 // unary operators
 %token  LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
@@ -88,7 +88,6 @@ Node* getParseTree ();
 basic_element
 	: IDENTIFIER { $$.nd = new Node($$.name); }
 	| CONSTANT { $$.nd = new Node("constant"); }
-	| STRING_LITERAL { $$.nd = new Node("string literal"); }
 	| '(' expression ')' {
 		$$.nd = new Node("basic_element");
 		$$.nd->insert(new Node("("))->insert($2.nd)->insert(new Node(")"));

@@ -121,9 +121,6 @@ void comment(void);
 	echo("char"); return(CONSTANT); 
 }			
  
- /* string literals */
- /* L?"(escaped char or char which is not quote or a backslash)" */
-L?\"(\\.|[^\\"])*\"   { echo("string_literal"); return(STRING_LITERAL); }
  /* ------------------------------------------------------------------------- */
 
  /* ------------------------- Assignment statements ------------------------- */
@@ -262,7 +259,6 @@ void echo(const char* lexeme)
 			column++;
 
 	ECHO; // print the text matched with the pattern
-	/* printf("\nline: %d %t,%t lexeme: %s %t,%t token: %s\n", line, lexeme, yytext); */
 }
 
  /* ------------------------------------------------------------------------- */
