@@ -2,6 +2,7 @@ BUILD = build
 TEST = test
 CC = gcc
 CXX = g++
+CXXFLAGS = -Wall
 TARGET = compiler
 
 .PHONY: all
@@ -9,11 +10,11 @@ all:
 	mkdir -p $(BUILD)
 	bison -v -d -Wall parser.y -o $(BUILD)/parser.cc
 	flex -o$(BUILD)/lexer.cc lexer.l 
-	$(CXX) -c $(BUILD)/lexer.cc -o $(BUILD)/lexer.o
-	$(CXX) -c $(BUILD)/parser.cc -o $(BUILD)/parser.o
-	$(CXX) -c tree/tree.cc -o $(BUILD)/tree.o
-	$(CXX) -c compiler.cc -o $(BUILD)/compiler.o
-	$(CXX) $(BUILD)/*.o -o $(BUILD)/${TARGET}.exe
+	$(CXX) $(CXXFLAGS) -c $(BUILD)/lexer.cc -o $(BUILD)/lexer.o
+	$(CXX) $(CXXFLAGS) -c $(BUILD)/parser.cc -o $(BUILD)/parser.o
+	$(CXX) $(CXXFLAGS) -c tree/tree.cc -o $(BUILD)/tree.o
+	$(CXX) $(CXXFLAGS) -c compiler.cc -o $(BUILD)/compiler.o
+	$(CXX) $(CXXFLAGS) $(BUILD)/*.o -o $(BUILD)/${TARGET}.exe
 
 .PHONY: test
 test:

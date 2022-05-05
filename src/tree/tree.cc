@@ -39,7 +39,7 @@ void Node::PrintParseTree(Node * root) {
 			Node * p = q.front();
 			q.pop();
 			fd << p->id << "-> {";
-			for (int i=0; i<p->children.size(); i++){
+			for (size_t i=0; i<p->children.size(); i++){
 				if(p->children[i]) {
 					q.push(p->children[i]);
 					fd << p->children[i]->id << (i==p->children.size()-1 ? "" : ",");
@@ -67,7 +67,7 @@ void Node::DeleteTree(Node* root)
 {
 	if (root == NULL) return;
 
-	for (int i=0; i<root->children.size(); i++){
+	for (size_t i=0; i<root->children.size(); i++){
 		DeleteTree(root->children[i]);
 	}
 	
@@ -81,7 +81,7 @@ void Node::PrintLabels(Node* root, std::ofstream& fd)
 	/* first print data of node */
 	fd << root->id << " [label=\"" << root->name << "\"]" << std::endl;
 
-	for (int i=0; i<root->children.size(); i++){
+	for (size_t i=0; i<root->children.size(); i++){
 		PrintLabels(root->children[i], fd);
 	}
 }

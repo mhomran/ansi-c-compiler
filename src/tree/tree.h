@@ -16,8 +16,8 @@
 class Node
 {
 	std::vector<Node *>children;
-	int id;
 	std::string name;
+	int id;
 
 	static void PrintLabels(Node* root, std::ofstream& fd);
 
