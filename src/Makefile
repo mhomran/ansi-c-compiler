@@ -23,6 +23,15 @@ else
 	cd $(BUILD); ./${TARGET}.exe < ../${TEST}/$(INPUT)
 endif
 
+.PHONY: show
+show:
+ifndef INPUT
+	@echo Please specify the name of the test file
+else
+	cd $(BUILD); ./${TARGET}.exe < ../${TEST}/$(INPUT)
+	cd $(BUILD); dot -Tpng -O parse_tree.dot
+endif
+
 .PHONY: clean
 clean:
 	rm -rf build

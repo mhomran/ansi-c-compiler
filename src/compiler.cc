@@ -26,21 +26,23 @@ main(void)
   bool ParseError;
   int ret;
   
+  std::cout << "[INFO]: Start Pasing ..." << std::endl;
   ret = yyparse();
   ParseError = 0 != ret;
 
   std::cout << std::endl;
   
   if(ParseError) {
-    std::cout << "[ERROR]: Parser Failed" << std::endl;
+    std::cout << "[ERROR]: Parser Failed. Exiting..." << std::endl;
   }
   else {
-    std::cout << "[INFO]: Parser Success" << std::endl;
+    std::cout << "[INFO]: Finish Parsing." << std::endl;
 
+    std::cout << "[INFO]: Start Writing .dot file..." << std::endl;
     Node* parseTree = getParseTree();
-    // Node::PrintParseTree(parseTree);
-    
+    Node::PrintParseTree(parseTree);
     Node::DeleteTree(parseTree);
+    std::cout << "[INFO]: Finish Writing .dot file." << std::endl;
   }
 	
 	return 0;

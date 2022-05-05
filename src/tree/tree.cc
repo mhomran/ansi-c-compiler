@@ -52,8 +52,6 @@ void Node::PrintParseTree(Node * root) {
 
 	fd << "}"<< std::endl; 
 	fd.close();
-
-	system("dot -Tpng -O parse_tree.dot");
 }
 
 Node* Node::insert(Node* node) {
