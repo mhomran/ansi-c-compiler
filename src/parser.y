@@ -7,19 +7,26 @@
 /* ------------------------------------------------------------------------- */
 /* --------------------------- YACC Definitions ---------------------------- */
 /* ------------------------------------------------------------------------- */
+/* ------------------------- Type Declarations ----------------------------- */
+%union {
+	struct {
+		char name[50];
+		struct Node* nd;
+	} TreeNode;
+}
 
 /* ------------------------- Tokens Definitions ---------------------------- */
 // Variables and Constants declaration
-%token IDENTIFIER CONSTANT
+%token <TreeNode> IDENTIFIER CONSTANT
 
 // unary operators
 %token  LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP 
 
 // Assignment stmts
-%token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
-%token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
-%token XOR_ASSIGN OR_ASSIGN
+%token <TreeNode> MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
+%token <TreeNode> SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
+%token <TreeNode> XOR_ASSIGN OR_ASSIGN
 
 // Data types
 %token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOID
@@ -54,13 +61,6 @@ void yyerror (char const *s);
 Node* getParseTree ();
 /* ------------------------------------------------------------------------- */
 %}
-/* ------------------------- Type Declarations ----------------------------- */
-%union {
-	struct {
-		char name[50];
-		struct Node* nd;
-	} TreeNode;
-}
 
 %type <TreeNode> function_global_var c_file
 %type <TreeNode> basic_element function_call
@@ -86,8 +86,8 @@ Node* getParseTree ();
 
 /* Precedence decreases as you go down */
 basic_element
-	: IDENTIFIER { $$.nd = new Node($$.name); }
-	| CONSTANT { $$.nd = new Node("constant"); }
+	: IDENTIFIER { $$.nd = new Node($1.name); }
+	| CONSTANT { $$.nd = new Node($1.name); }
 	| '(' expression ')' {
 		$$.nd = new Node("basic_element");
 		$$.nd->insert(new Node("("))->insert($2.nd)->insert(new Node(")"));
@@ -326,13 +326,13 @@ declaration
 	: var_const IDENTIFIER';' {
 		$$.nd = new Node("declaration");
 		$$.nd->insert($1.nd);
-		$$.nd->insert(new Node($$.name));
+		$$.nd->insert(new Node($2.name));
 		$$.nd->insert(new Node(";"));
 	}
 	| var_const IDENTIFIER '=' assignment ';' {
 		$$.nd = new Node("declaration");
 		$$.nd->insert($1.nd);
-		$$.nd->insert(new Node($$.name));
+		$$.nd->insert(new Node($2.name));
 		$$.nd->insert(new Node("="));
 		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node(";"));
@@ -367,14 +367,14 @@ parameters
 	: var_const IDENTIFIER { 
     $$.nd = new Node("parameters");
     $$.nd->insert($1.nd); 
-    $$.nd->insert(new Node($$.name)); 
+    $$.nd->insert(new Node($2.name)); 
   }
 	| parameters ',' var_const IDENTIFIER {
 		$$.nd = new Node("parameters"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(","));
 		$$.nd->insert($3.nd);
-    $$.nd->insert(new Node($$.name)); 
+    $$.nd->insert(new Node($4.name)); 
 	}
 	;
 
@@ -472,7 +472,7 @@ switch_body
   : CASE CONSTANT ':' block BREAK ';' switch_body {
 		$$.nd = new Node("labeled_stmt"); 
 		$$.nd->insert(new Node("case")); 
-		$$.nd->insert(new Node($$.name)); 
+		$$.nd->insert(new Node($2.name)); 
 		$$.nd->insert(new Node(":")); 
 		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node("break")); 
@@ -551,11 +551,11 @@ return
   }
 	;
 
-program: c_file { gParseTree = $1.nd;}
+program: c_file { gParseTree = $1.nd; }
 
 c_file
 	: function_global_var {
-		$$.nd = new Node("c_file"); 
+		$$.nd = new Node("c_file");
 		$$.nd->insert($1.nd);
 	}
 	| c_file function_global_var {
@@ -566,11 +566,11 @@ c_file
 
 function_global_var
   : function_signature block {
-		$$.nd = new Node("function_definition"); 
+		$$.nd = new Node("function_global_var"); 
 		$$.nd->insert($1.nd)->insert($2.nd);
 	}
   | function_signature ';' {
-		$$.nd = new Node("function_definition"); 
+		$$.nd = new Node("function_global_var"); 
 		$$.nd->insert($1.nd)->insert(new Node(";"));
   }
 	| declaration { 
@@ -583,7 +583,7 @@ function_signature
 	: var_const IDENTIFIER '(' parameters ')' {
 		$$.nd = new Node("declarator"); 
 		$$.nd->insert($1.nd);
-		$$.nd->insert(new Node($$.name));
+		$$.nd->insert(new Node($2.name));
 		$$.nd->insert(new Node("("));		
 		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node(")"));		
@@ -591,6 +591,7 @@ function_signature
 	| var_const IDENTIFIER '(' ')' {
 		$$.nd = new Node("declarator"); 
 		$$.nd->insert($1.nd);
+		$$.nd->insert(new Node($2.name));
 		$$.nd->insert(new Node("("));
 		$$.nd->insert(new Node(")"));		
 	}

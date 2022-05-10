@@ -9,4 +9,4 @@
  * 
  */
 
-const int a;
+const int a = 6;
