@@ -12,6 +12,7 @@
 	struct {
 		char name[50];
 		struct Node* nd;
+		struct Node* ASTnd;
 	} TreeNode;
 }
 
@@ -47,6 +48,7 @@
 
 /* -------------------------- global variables ----------------------------- */
 static Node* gParseTree;
+static Node* gAST;
 /* ------------------------------------------------------------------------- */
 
 /* ----------------------- extern global variables ------------------------- */
@@ -86,24 +88,34 @@ Node* getParseTree ();
 
 /* Precedence decreases as you go down */
 basic_element
-	: IDENTIFIER { $$.nd = new Node($1.name); }
-	| CONSTANT { $$.nd = new Node($1.name); }
+	: IDENTIFIER { 
+		$$.nd = new Node($1.name);
+		$$.ASTnd = new Node("identifier");
+	}
+	| CONSTANT { 
+		$$.nd = new Node($1.name); 
+		$$.ASTnd = new Node("constant");
+	}
 	| '(' expression ')' {
 		$$.nd = new Node("basic_element");
 		$$.nd->insert(new Node("("))->insert($2.nd)->insert(new Node(")"));
+		$$.ASTnd = $2.ASTnd;
 	}
 	;
 
+//action: push arguments in the stack and goto
 function_call
 	: basic_element { 
 		$$.nd = new Node("function_call"); 
 		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
 	}
 	| function_call '(' ')' {
 		$$.nd = new Node("function_call"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("("));
 		$$.nd->insert(new Node(")"));
+		$$.ASTnd = new Node("function_call");
 	}
 	| function_call '(' arguments ')' {
 		$$.nd = new Node("function_call"); 
@@ -111,6 +123,7 @@ function_call
 		$$.nd->insert(new Node("("));
 		$$.nd->insert($3.nd);
 		$$.nd->insert(new Node(")"));
+		$$.ASTnd = new Node("function_call");
 	}
 	;
 
@@ -118,10 +131,13 @@ arguments
 	: assignment {
 		$$.nd = new Node ("arguments");
 		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
 	}
 	| arguments ',' assignment {
 		$$.nd = new Node ("arguments");
 		$$.nd->insert($1.nd)->insert(new Node(","))->insert($3.nd);
+		$$.ASTnd = $1.ASTnd;
+		$$.ASTnd->insert($3.ASTnd);
 	}
 	;
 
@@ -129,196 +145,299 @@ unary_operation
 	: function_call {
 		$$.nd = new Node ("unary_operation");
 		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
 	}
 	| unary_operator unary_operation {
 		$$.nd = new Node ("unary_operation");
 		$$.nd->insert($1.nd)->insert($2.nd);
+		$$.ASTnd = $1.ASTnd;
+		$$.ASTnd->insert($2.ASTnd);
 	}
 	;
 
 unary_operator
-	: '~' { $$.nd = new Node("unary_operator"); $$.nd->insert(new Node("~")); }
-	| '!' { $$.nd = new Node("unary_operator"); $$.nd->insert(new Node("!")); }
+	: '~' { 
+		$$.nd = new Node("unary_operator"); 
+		$$.nd->insert(new Node("~")); 
+		$$.ASTnd = new Node("bitwise_not");
+	}
+	| '!' { 
+		$$.nd = new Node("unary_operator"); 
+		$$.nd->insert(new Node("!")); 
+		$$.ASTnd = new Node("not");
+	}
 	;
 
 
 mul_div_mod 
-	: unary_operation { $$.nd = new Node("mul_div_mod"); $$.nd->insert($1.nd); }
+	: unary_operation { 
+		$$.nd = new Node("mul_div_mod"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| mul_div_mod '*' unary_operation {
 		$$.nd = new Node("mul_div_mod"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("*"));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = new Node("*");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| mul_div_mod '/' unary_operation {
 		$$.nd = new Node("mul_div_mod"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("/"));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = new Node("/");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| mul_div_mod '%' unary_operation {
 		$$.nd = new Node("mul_div_mod"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("%"));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = new Node("%");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 add_sub
-	: mul_div_mod { $$.nd = new Node("add_sub"); $$.nd->insert($1.nd); }
+	: mul_div_mod { 
+		$$.nd = new Node("add_sub"); 
+		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
+	}
 	| add_sub '+' mul_div_mod {
 		$$.nd = new Node("add_sub"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("+"));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = new Node("+");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| add_sub '-' mul_div_mod {
 		$$.nd = new Node("add_sub"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("-"));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = new Node("-");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 shift
-	: add_sub { $$.nd = new Node("shift"); $$.nd->insert($1.nd); }
+	: add_sub { 
+		$$.nd = new Node("shift"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+		}
 	| shift LEFT_OP add_sub {
 		$$.nd = new Node("shift"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("<<"));
 		$$.nd->insert($3.nd);		
+		$$.ASTnd = new Node("<<");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| shift RIGHT_OP add_sub {
 		$$.nd = new Node("shift"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(">>"));
 		$$.nd->insert($3.nd);			
+		$$.ASTnd = new Node(">>");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 relation
-	: shift { $$.nd = new Node("relation"); $$.nd->insert($1.nd); }
+	: shift { 
+		$$.nd = new Node("relation"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| relation '<' shift {
 		$$.nd = new Node("relation"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("<"));
 		$$.nd->insert($3.nd);	
+		$$.ASTnd = new Node("<");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| relation '>' shift {
 		$$.nd = new Node("relation"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(">"));
 		$$.nd->insert($3.nd);		
+		$$.ASTnd = new Node(">");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| relation LE_OP shift {
 		$$.nd = new Node("relation"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("<="));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = new Node("<=");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| relation GE_OP shift {
 		$$.nd = new Node("relation"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(">="));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = new Node(">=");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 equal_not_equal
-	: relation { $$.nd = new Node("equal_not_equal"); $$.nd->insert($1.nd); }
+	: relation { 
+		$$.nd = new Node("equal_not_equal"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| equal_not_equal EQ_OP relation {
 		$$.nd = new Node("equal_not_equal"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("=="));
 		$$.nd->insert($3.nd);		
+		$$.ASTnd = new Node("==");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| equal_not_equal NE_OP relation {
 		$$.nd = new Node("equal_not_equal"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("!="));
 		$$.nd->insert($3.nd);		
+		$$.ASTnd = new Node("!=");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 bitwise_and
-	: equal_not_equal { $$.nd = new Node("bitwise_and"); $$.nd->insert($1.nd); }
+	: equal_not_equal { 
+		$$.nd = new Node("bitwise_and"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| bitwise_and '&' equal_not_equal {
 		$$.nd = new Node("bitwise_and"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("$"));
 		$$.nd->insert($3.nd);			
+		$$.ASTnd = new Node("&");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 xor
-	: bitwise_and { $$.nd = new Node("xor"); $$.nd->insert($1.nd); }
+	: bitwise_and { 
+		$$.nd = new Node("xor"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| xor '^' bitwise_and {
 		$$.nd = new Node("xor"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("^"));
 		$$.nd->insert($3.nd);			
+		$$.ASTnd = new Node("^");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 bitwise_or
-	: xor { $$.nd = new Node("bitwise_or"); $$.nd->insert($1.nd); }
+	: xor { 
+		$$.nd = new Node("bitwise_or"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| bitwise_or '|' xor {
 		$$.nd = new Node("bitwise_or"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("|"));
 		$$.nd->insert($3.nd);			
+		$$.ASTnd = new Node("|");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 and
-	: bitwise_or { $$.nd = new Node("and"); $$.nd->insert($1.nd); }
+	: bitwise_or { 
+		$$.nd = new Node("and"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| and AND_OP bitwise_or {
 		$$.nd = new Node("and"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("&&"));
 		$$.nd->insert($3.nd);			
+		$$.ASTnd = new Node("&&");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 or
-	: and { $$.nd = new Node("or"); $$.nd->insert($1.nd); }
+	: and { 
+		$$.nd = new Node("or"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| or OR_OP and {
 		$$.nd = new Node("or"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("||"));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = new Node("||");
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 assignment
-	: or { $$.nd = new Node("assignment"); $$.nd->insert($1.nd); }
+	: or { 
+		$$.nd = new Node("assignment");
+		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
+	}
 	| unary_operation assign_operator assignment {
 		$$.nd = new Node("assignment"); 
 		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd);
+		$$.ASTnd = $2.ASTnd;
+		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
 
 assign_operator
-	: '=' { $$.nd = new Node($$.name); $$.nd->insert(new Node("=")); }
-	| MUL_ASSIGN { $$.nd = new Node($$.name); }
-	| DIV_ASSIGN { $$.nd = new Node($$.name); }
-	| MOD_ASSIGN { $$.nd = new Node($$.name); }
-	| ADD_ASSIGN { $$.nd = new Node($$.name); }
-	| SUB_ASSIGN { $$.nd = new Node($$.name); }
-	| LEFT_ASSIGN { $$.nd = new Node($$.name); }
-	| RIGHT_ASSIGN { $$.nd = new Node($$.name); }
-	| AND_ASSIGN { $$.nd = new Node($$.name); }
-	| XOR_ASSIGN { $$.nd = new Node($$.name); }
-	| OR_ASSIGN { $$.nd = new Node($$.name); }
+	: '=' { 
+		$$.nd = new Node($$.name); 
+		$$.nd->insert(new Node("=")); 
+		$$.ASTnd = new Node("="); 
+	}
+	| MUL_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| DIV_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| MOD_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| ADD_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| SUB_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| LEFT_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| RIGHT_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| AND_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| XOR_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| OR_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
 	;
 
 expression
-	: assignment { $$.nd = new Node("expression"); $$.nd->insert($1.nd); }
+	: assignment { 
+		$$.nd = new Node("expression");
+	 	$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| expression ',' assignment {
 		$$.nd = new Node("expression");
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(","));
 		$$.nd->insert($3.nd);
+		$$.ASTnd = $1.ASTnd;
+		$$.ASTnd->insert($3.ASTnd);
 	}
 	;
 
@@ -328,6 +447,7 @@ declaration
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node($2.name));
 		$$.nd->insert(new Node(";"));
+		$$.ASTnd = new Node("declaration");
 	}
 	| var_const IDENTIFIER '=' assignment ';' {
 		$$.nd = new Node("declaration");
@@ -336,6 +456,8 @@ declaration
 		$$.nd->insert(new Node("="));
 		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node(";"));
+		$$.ASTnd = new Node("declaration");
+		$$.ASTnd->insert($4.ASTnd);
 	}
 	;
 
@@ -379,27 +501,32 @@ parameters
 	;
 
 stmt
-	: MIF {$$.nd = new Node("stmt"); $$.nd->insert($1.nd); }
-  | UIF {$$.nd = new Node("stmt"); $$.nd->insert($1.nd); }
+	: MIF { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); $$.ASTnd = $1.ASTnd; }
+  | UIF { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); $$.ASTnd = $1.ASTnd; }
 	;
 
 other_stmt
-	: block { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); }
-	| expression_stmt { $$.nd = new Node("stmt"); $$.nd->insert($1.nd);}
-	| return { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); }
-	| switch { $$.nd = new Node("stmt"); $$.nd->insert($1.nd);}
-	| loop { $$.nd = new Node("stmt"); $$.nd->insert($1.nd);}
+	: block { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); $$.ASTnd = $1.ASTnd; }
+	| expression_stmt { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); $$.ASTnd = $1.ASTnd; }
+	| return { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); $$.ASTnd = $1.ASTnd; }
+	| switch { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); $$.ASTnd = $1.ASTnd; }
+	| loop { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); $$.ASTnd = $1.ASTnd; }
   ;
 
+//action: jump based on the expression
 MIF 
   : IF '(' expression ')' MIF ELSE MIF {
     $$.nd = new Node("MIF");
     $$.nd->insert(new Node("if"))->insert(new Node("("))->insert($3.nd);
     $$.nd->insert(new Node(")"))->insert($5.nd)->insert(new Node("else"))->insert($7.nd);
-  }
+		
+    $$.ASTnd = new Node("MIF");
+		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd)->insert($7.ASTnd);
+	}
   | other_stmt {
     $$.nd = new Node("MIF");
     $$.nd->insert($1.nd);
+    $$.ASTnd = $1.ASTnd;
   }
   ;
 
@@ -408,11 +535,17 @@ UIF
     $$.nd = new Node("UIF");
     $$.nd->insert(new Node("if"))->insert(new Node("("))->insert($3.nd);
     $$.nd->insert(new Node(")"))->insert($5.nd);
+		
+		$$.ASTnd = new Node("UIF");
+		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd);
   }
   | IF '(' expression ')' MIF ELSE UIF {
     $$.nd = new Node("UIF");
     $$.nd->insert(new Node("if"))->insert(new Node("("))->insert($3.nd);
     $$.nd->insert(new Node(")"))->insert($5.nd)->insert(new Node("else"))->insert($7.nd);
+		
+		$$.ASTnd = new Node("UIF");
+		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd)->insert($7.ASTnd);
   }
   ;
 
@@ -427,12 +560,14 @@ block
 		$$.nd->insert(new Node("{")); 
 		$$.nd->insert($2.nd); 
 		$$.nd->insert(new Node("}")); 		
+		$$.ASTnd = $2.ASTnd;
 	}
 	| '{' declarations '}' {
 		$$.nd = new Node("block"); 
 		$$.nd->insert(new Node("{")); 
 		$$.nd->insert($2.nd); 
 		$$.nd->insert(new Node("}")); 		
+		$$.ASTnd = $2.ASTnd;
 	}
 	| '{' declarations stmts '}' {
 		$$.nd = new Node("block"); 
@@ -440,20 +575,35 @@ block
 		$$.nd->insert($2.nd); 
 		$$.nd->insert($3.nd); 
 		$$.nd->insert(new Node("}")); 
+		$$.ASTnd = $2.ASTnd;
+		$$.ASTnd->insert($3.ASTnd);
 	}
 	;
 
 declarations
-	: declaration { $$.nd = new Node("declarations"); $$.nd->insert($1.nd); }
+	: declaration { 
+		$$.nd = new Node("declarations"); 
+		$$.nd->insert($1.nd); 
+		$$.ASTnd = $1.ASTnd;
+	}
 	| declarations declaration {
 		$$.nd = new Node("declarations"); $$.nd->insert($1.nd)->insert($2.nd);
+		$$.ASTnd = $1.ASTnd;
+		$$.ASTnd->insert($2.ASTnd);
 	}
 	;
 
 stmts
-	: stmt { $$.nd = new Node("stmts"); $$.nd->insert($1.nd); }
+	: stmt { 
+		$$.nd = new Node("stmts"); 
+		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
+	}
 	| stmts stmt {
-		$$.nd = new Node("stmts"); $$.nd->insert($1.nd)->insert($2.nd);
+		$$.nd = new Node("stmts"); 
+		$$.nd->insert($1.nd)->insert($2.nd);
+		$$.ASTnd = $1.ASTnd;
+		$$.ASTnd->insert($2.ASTnd);
 	}
 	;
 
@@ -461,13 +611,16 @@ expression_stmt
 	: ';' { 
 		$$.nd = new Node("expression_stmt"); 
 		$$.nd->insert(new Node(";"));
+		$$.ASTnd = new Node("NOP");
 	}
 	| expression ';' {
 		$$.nd = new Node("expression_stmt"); 
 		$$.nd->insert($1.nd)->insert(new Node(";"));
+		$$.ASTnd = $1.ASTnd;
 	}
 	;
 
+//action: if(temp == constant) {enter call body jump out of the switch }
 switch_body
   : CASE CONSTANT ':' block BREAK ';' switch_body {
 		$$.nd = new Node("labeled_stmt"); 
@@ -478,6 +631,8 @@ switch_body
 		$$.nd->insert(new Node("break")); 
 		$$.nd->insert(new Node(";")); 
 		$$.nd->insert($7.nd);
+		$$.ASTnd = new Node("case");
+		$$.ASTnd->insert($4.ASTnd)->insert($7.ASTnd);
 	}
 	| DEFAULT ':' block BREAK ';' {
 		$$.nd = new Node("labeled_stmt"); 
@@ -486,20 +641,27 @@ switch_body
 		$$.nd->insert($3.nd); 
 		$$.nd->insert(new Node("break")); 
 		$$.nd->insert(new Node(";")); 
+		$$.ASTnd = new Node("default");
+		$$.ASTnd->insert($3.ASTnd);
 	}
 
+//action: read identifier and store it in a temp, call switch body
+//ref: https://fog.ccsf.edu/~gboyd/cs270/online/mipsII/switch.html
 switch
-	: SWITCH '(' expression ')' '{' switch_body '}' {
+	: SWITCH '(' IDENTIFIER ')' '{' switch_body '}' {
 		$$.nd = new Node("switch"); 
 		$$.nd->insert(new Node("("));
-		$$.nd->insert($3.nd);
+		$$.nd->insert(new Node($3.name));
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert(new Node("{"));
 		$$.nd->insert($6.nd);
 		$$.nd->insert(new Node("}"));
+		$$.ASTnd = new Node("switch");
+		$$.ASTnd->insert($6.ASTnd);
 	}
 	;
 
+//action: Add a label, call body, end with a goto under the expression
 loop
 	: WHILE '(' expression ')' block {
 		$$.nd = new Node("loop"); 
@@ -508,6 +670,8 @@ loop
 		$$.nd->insert($3.nd);
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert($5.nd);
+		$$.ASTnd = new Node("while");
+		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd);
 	}
 	| DO stmt WHILE '(' expression ')' ';' {
 		$$.nd = new Node("loop"); 
@@ -518,6 +682,8 @@ loop
 		$$.nd->insert($5.nd);
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert(new Node(";"));
+		$$.ASTnd = new Node("DoWhile");
+		$$.ASTnd->insert($2.ASTnd)->insert($5.ASTnd);
 	}
 	| FOR '(' expression_stmt expression_stmt ')' block {
 		$$.nd = new Node("loop"); 
@@ -527,6 +693,8 @@ loop
 		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert($6.nd);
+		$$.ASTnd = new Node("for");
+		$$.ASTnd->insert($3.ASTnd)->insert($4.ASTnd)->insert($6.ASTnd);
 	}
 	| FOR '(' expression_stmt expression_stmt expression ')' block {
 		$$.nd = new Node("loop"); 
@@ -537,30 +705,39 @@ loop
 		$$.nd->insert($5.nd);		
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert($7.nd);		
+		$$.ASTnd = new Node("for");
+		$$.ASTnd->insert($3.ASTnd)->insert($4.ASTnd)->insert($5.ASTnd)->insert($7.ASTnd);
 	}
 	;
 
+
+//action: goto + push
 return
   : RETURN ';' { 
     $$.nd = new Node("return"); 
     $$.nd->insert(new Node("return"))->insert(new Node(";")); 
+		$$.ASTnd = new Node("return");
 	}
   | RETURN expression ';' { 
   	$$.nd = new Node("return"); 
   	$$.nd->insert(new Node("return"))->insert($2.nd)->insert(new Node(";")); 
+		$$.ASTnd = new Node("return");
   }
 	;
 
-program: c_file { gParseTree = $1.nd; }
+program: c_file { gParseTree = $1.nd; gAST = $1.ASTnd;}
 
 c_file
 	: function_global_var {
 		$$.nd = new Node("c_file");
 		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
 	}
 	| c_file function_global_var {
 		$$.nd = new Node("c_file"); 
 		$$.nd->insert($1.nd)->insert($2.nd);
+		$$.ASTnd = $1.ASTnd;
+		$$.ASTnd->insert($2.ASTnd);
 	}
 	;
 
@@ -568,32 +745,39 @@ function_global_var
   : function_signature block {
 		$$.nd = new Node("function_global_var"); 
 		$$.nd->insert($1.nd)->insert($2.nd);
+		$$.ASTnd = $1.ASTnd;
+		$$.ASTnd->insert($2.ASTnd);
 	}
   | function_signature ';' {
 		$$.nd = new Node("function_global_var"); 
 		$$.nd->insert($1.nd)->insert(new Node(";"));
+		$$.ASTnd = $1.ASTnd;
   }
 	| declaration { 
 		$$.nd = new Node("function_global_var"); 
 		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
 	}
 	;
 
+//Action: just write the function label
 function_signature
 	: var_const IDENTIFIER '(' parameters ')' {
-		$$.nd = new Node("declarator"); 
+		$$.nd = new Node("function_signature"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node($2.name));
 		$$.nd->insert(new Node("("));		
 		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node(")"));		
+		$$.ASTnd = new Node("function_signature"); 
 	}
 	| var_const IDENTIFIER '(' ')' {
-		$$.nd = new Node("declarator"); 
+		$$.nd = new Node("function_signature"); 
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node($2.name));
 		$$.nd->insert(new Node("("));
 		$$.nd->insert(new Node(")"));		
+		$$.ASTnd = new Node("function_signature"); 
 	}
 	;
 
@@ -619,6 +803,11 @@ yyerror (char const *s)
 Node* getParseTree ()
 {
 	return gParseTree;
+}
+
+Node* getAST ()
+{
+	return gAST;
 }
 /* ------------------------------------------------------------------------- */
 

@@ -28,7 +28,13 @@ A compiler for C language 89 which is known as ANSI C.
 # How to run testcases and show the generated parse tree
 
 1. Change directory to the src folder.
-1. run `make show INPUT=file_name.c` Replace
+1. run `make show_pst INPUT=file_name.c` Replace
+   `file_name.c` with the name of the test file.
+
+# How to run testcases and show the generated abstract syntax tree (AST)
+
+1. Change directory to the src folder.
+1. run `make show_ast INPUT=file_name.c` Replace
    `file_name.c` with the name of the test file.
 
 # References

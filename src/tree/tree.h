@@ -27,6 +27,6 @@ class Node
 		Node(std::string Name);
 		Node* insert(Node* node);
 		std::vector<Node *> getChildren();
-		static void PrintParseTree(Node * root);
+		static void PrintParseTree(Node * root, std::string fname);
 		static void DeleteTree(Node* node);
 };

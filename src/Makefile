@@ -24,8 +24,17 @@ else
 	cd $(BUILD); ./${TARGET}.exe < ../${TEST}/$(INPUT)
 endif
 
-.PHONY: show
-show:
+.PHONY: show_ast
+show_ast:
+ifndef INPUT
+	@echo Please specify the name of the test file
+else
+	cd $(BUILD); ./${TARGET}.exe < ../${TEST}/$(INPUT)
+	cd $(BUILD); dot -Tpng -O AST.dot
+endif
+
+.PHONY: show_pst
+show_pst:
 ifndef INPUT
 	@echo Please specify the name of the test file
 else

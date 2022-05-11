@@ -19,12 +19,12 @@ Node::Node(std::string Name)
 	NodesCount++;
 }
 
-void Node::PrintParseTree(Node * root) {
+void Node::PrintParseTree(Node * root, std::string fname) {
 	if (root==NULL) return;
 
 	std::ofstream fd;
-	fd.open ("parse_tree.dot");
-	fd << "digraph parser_tree {" << std::endl;
+	fd.open (fname + ".dot");
+	fd << "digraph " << fname << "{" << std::endl;
 	
 	PrintLabels(root, fd);
 
