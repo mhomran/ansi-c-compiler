@@ -22,9 +22,12 @@ class VarSymbol : public Symbol {
   bool isUsed;
 
   public:
-  VarSymbol(string name, int scope, Datatype, bool isConst, bool isInitialized);
+  VarSymbol(string name, int scope, int line, Datatype,
+   bool isConst, bool isInitialized);
   bool getIsUsed(void);
   void setIsUsed(bool);
+  bool getIsConst(void);
+  void setIsConst(bool);
   bool getIsInitialized(void);
   void setIsInitialized(bool);
 };

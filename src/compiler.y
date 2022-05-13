@@ -63,6 +63,7 @@ extern int line;
 /* ------------------------- Functions prototypes -------------------------- */
 int yylex(void);
 void yyerror (char const *s);
+void yydtor (void);
 
 Node* getParseTree ();
 Node* getAST();
@@ -100,15 +101,15 @@ basic_element
 
 		Symbol* sym = gSymbolTable->LookUp($1.name);
 		if(NULL == sym) {
-			std::cout << "[ERROR]: " << $1.name << " undefined variable." << std::endl;
+			std::cout << "[ERROR]: @ line " << line << " " << $1.name << " undefined variable." << std::endl;
 		} else {
 			VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
 			if(NULL == temp) {
-				std::cout << "[ERROR]: " << $1.name << " is a function not a variable." << std::endl;
+				std::cout << "[ERROR]: @ line " << line << " " << $1.name << " is a function not a variable." << std::endl;
 			} else {
 				temp->setIsUsed(true);
 				if(!(temp->getIsInitialized())) {
-					std::cout << "[ERROR]: " << $1.name << " used before initialized." << std::endl;
+					std::cout << "[ERROR]: @ line " << line << " " << $1.name << " used before initialized." << std::endl;
 				}
 			}
 		}
@@ -428,13 +429,20 @@ assignment
 
 		Symbol* sym = gSymbolTable->LookUp($1.name);
 		if(NULL == sym) {
-			std::cout << "[ERROR]: " << $1.name << " undefined variable." << std::endl;
+			std::cout << "[ERROR]: @ line " << line << " " 
+			<< $1.name << " undefined variable." << std::endl;
 		} else {
 			VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
 			if(NULL == temp) {
-				std::cout << "[ERROR]: " << $1.name << " is a function not a variable." << std::endl;
+				std::cout << "[ERROR]: @ line " << line << " " 
+				<< $1.name << " is a function not a variable." << std::endl;
 			} else {
-				temp->setIsInitialized(true);
+				if(temp->getIsConst()) {
+					std::cout << "[ERROR]: @ line " << line << " " 
+					<< $1.name << " is a read-only." << std::endl;
+				} else {
+					temp->setIsInitialized(true);
+				}
 			}
 		}
 	}
@@ -877,6 +885,16 @@ yyerror (char const *s)
 	printf("line:%d\n", line);
 }
 
+/**
+* Destructor function for parser to clean up any allocation.
+*/
+void 
+yydtor () {
+	delete gSymbolTable;
+	Node::DeleteTree(gParseTree);
+	Node::DeleteTree(gAST);
+}
+
 Node* getParseTree ()
 {
 	return gParseTree;
@@ -893,11 +911,11 @@ insertVariable(string name, Datatype dt, bool isConst, bool isInitialized)
 	// Lookup the symbol table, if exist return symantic error (redefinition)
 	Symbol* sym = gSymbolTable->LookUp(name);
 	if(NULL != sym && sym->getScope() == gSymbolTable->getLevel()) {
-		std::cout << "[ERROR]: " << name << "redefinition" << std::endl;
+		std::cout << "[ERROR]: @ line " << line << " " << name << "redefinition" << std::endl;
 	} 
 	// otherwise, add it to the symbol table
 	else {
-		sym = new VarSymbol(name, gSymbolTable->getLevel(), dt, isConst, isInitialized);
+		sym = new VarSymbol(name, gSymbolTable->getLevel(), line, dt, isConst, isInitialized);
 		gSymbolTable->insert(name, sym);
 	}
 }

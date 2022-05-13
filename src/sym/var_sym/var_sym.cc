@@ -12,8 +12,9 @@
 
 #include "var_sym.hh"
 
-VarSymbol::VarSymbol(string name, int scope, Datatype datatype, bool isConst, bool isInitialized) 
-: Symbol(name, scope)
+VarSymbol::VarSymbol(string name, int scope, int line,
+ Datatype datatype, bool isConst, bool isInitialized) 
+: Symbol(name, scope, line)
 , datatype{datatype}
 , isConst{isConst}
 , isInitialized{isInitialized}
@@ -35,4 +36,11 @@ bool VarSymbol::getIsInitialized(void) {
 
 void VarSymbol::setIsInitialized(bool isInitialized) {
   this->isInitialized = isInitialized;
+}
+bool VarSymbol::getIsConst(void) {
+  return isConst;
+}
+
+void VarSymbol::setIsConst(bool isConst) {
+  this->isConst = isConst;
 }

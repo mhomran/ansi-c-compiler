@@ -13,9 +13,10 @@
 #include "sym.hh"
 using namespace std;
 
-Symbol::Symbol(string name, int scope)
+Symbol::Symbol(string name, int scope, int line)
 : name{name}
-, scope{scope} {
+, scope{scope}
+, line{line} {
 
 }
 
@@ -29,4 +30,8 @@ Symbol::~Symbol() {
 
 void Symbol::print() {
   cout << name << endl;
+}
+
+int Symbol::getLine(void) {
+  return line;
 }

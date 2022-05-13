@@ -16,6 +16,7 @@
 
 /* ------------------------- Functions prototypes -------------------------- */
 int yyparse (void);
+void yydtor (void);
 Node* getParseTree ();
 Node* getAST ();
 /* ------------------------------------------------------------------------- */
@@ -42,16 +43,15 @@ main(void)
     std::cout << "[INFO]: Start Writing parse_tree.dot file..." << std::endl;
     Node* parseTree = getParseTree();
     Node::PrintParseTree(parseTree, "parse_tree");
-    Node::DeleteTree(parseTree);
     std::cout << "[INFO]: Finish Writing parse_tree.dot file." << std::endl;
     
     std::cout << "[INFO]: Start Writing AST.dot file..." << std::endl;
     Node* AST = getAST();
     Node::PrintParseTree(AST, "AST");
-    Node::DeleteTree(AST);
     std::cout << "[INFO]: Finish Writing AST.dot file." << std::endl;
   }
-	
+	yydtor();
+  
 	return 0;
 }
 /* ------------------------------------------------------------------------- */

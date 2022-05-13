@@ -17,10 +17,12 @@ using namespace std;
 class Symbol {
   string name;
   int scope;
+  int line;
   
   public:
-  Symbol(string name, int scope);
+  Symbol(string name, int scope, int line);
   virtual ~Symbol();
   virtual void print();
   int getScope();
+  int getLine(void);
 };

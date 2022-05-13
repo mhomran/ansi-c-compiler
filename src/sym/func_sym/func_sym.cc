@@ -12,8 +12,8 @@
 
 #include "func_sym.hh"
 
-FuncSymbol::FuncSymbol(string name, int scope, Datatype returnDatatype)
-: Symbol(name, scope),
+FuncSymbol::FuncSymbol(string name, int scope, int line, Datatype returnDatatype)
+: Symbol(name, scope, line),
 returnDatatype{returnDatatype}
 {
 

@@ -21,7 +21,7 @@ class FuncSymbol : public Symbol {
   vector<Datatype> pars;
 
   public:
-  FuncSymbol(string name, int scope, Datatype returnDatatype);
+  FuncSymbol(string name, int scope, int line, Datatype returnDatatype);
   
   void InsertPar(Datatype);
   bool IsMatchingParameters(vector<Datatype> args);

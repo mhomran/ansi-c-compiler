@@ -13,6 +13,7 @@ const int a; /* uninitalized */
 const int b; /* uninitalized */
 int main() {
   const int a; /* Shadowing + uninitalized */
+  a = 3; /* assignment of read-only variable*/
   {
     int a = 2; /* another shadowing + initialized + used */
     a = b + 2;

@@ -32,7 +32,8 @@ SymbolTable::~SymbolTable() {
     string symName = symbol.first;
     VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
     if(NULL != temp && !(temp->getIsUsed())) {
-      cout << endl << "[WARNING]: " << symName << " is Unsed." << endl;
+      cout << endl << "[WARNING]: @ line " << sym->getLine() << " " 
+      << symName << " is Unsed." << endl;
     }
     delete sym;
   }

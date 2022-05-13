@@ -258,7 +258,7 @@ void echo(const char* lexeme)
 		else
 			column++;
 
-	ECHO; // print the text matched with the pattern
+	/* ECHO; // print the text matched with the pattern */
 }
 
  /* ------------------------------------------------------------------------- */
