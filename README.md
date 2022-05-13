@@ -1,6 +1,6 @@
 # About
 
-A compiler for C language 89 which is known as ANSI C.
+A simplified compiler for C language 89 which is known as ANSI C.
 
 # How to build the compiler
 
