@@ -10,7 +10,7 @@
  */
 
 #include <bits/stdc++.h>
-#include "tree.h"
+#include "tree.hh"
 
 
 Node::Node(std::string Name)

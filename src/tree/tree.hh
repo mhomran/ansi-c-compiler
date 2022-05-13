@@ -1,5 +1,5 @@
 /**
- * @file tree.h
+ * @file tree.hh
  * @author Tree Data Structure for printing the parse tree
  * @brief 
  * @version 0.1

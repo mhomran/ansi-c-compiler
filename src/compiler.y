@@ -43,12 +43,14 @@
 %{
 /* ------------------------------- includes -------------------------------- */
 #include <iostream>
-#include "../tree/tree.h"
+#include "../tree/tree.hh"
+#include "../table/table.hh"
 /* ------------------------------------------------------------------------- */
 
 /* -------------------------- global variables ----------------------------- */
 static Node* gParseTree;
 static Node* gAST;
+static SymbolTable* gSymTable = new SymbolTable();
 /* ------------------------------------------------------------------------- */
 
 /* ----------------------- extern global variables ------------------------- */
