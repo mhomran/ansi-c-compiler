@@ -25,4 +25,6 @@ class VarSymbol : public Symbol {
   VarSymbol(string name, int scope, Datatype, bool isConst, bool isInitialized);
   bool getIsUsed(void);
   void setIsUsed(bool);
+  bool getIsInitialized(void);
+  void setIsInitialized(bool);
 };

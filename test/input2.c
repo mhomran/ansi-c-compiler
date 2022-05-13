@@ -16,6 +16,7 @@ int main() {
   {
     int a = 2; /* another shadowing + initialized + used */
     a = b + 2;
+    a = a + 2;
     a = c + 2; /* undefined */
   }
 }

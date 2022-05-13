@@ -28,3 +28,11 @@ bool VarSymbol::getIsUsed(void) {
 void VarSymbol::setIsUsed(bool isUsed) {
   this->isUsed = isUsed;
 }
+
+bool VarSymbol::getIsInitialized(void) {
+  return isInitialized;
+}
+
+void VarSymbol::setIsInitialized(bool isInitialized) {
+  this->isInitialized = isInitialized;
+}

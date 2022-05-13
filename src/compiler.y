@@ -107,6 +107,9 @@ basic_element
 				std::cout << "[ERROR]: " << $1.name << " is a function not a variable." << std::endl;
 			} else {
 				temp->setIsUsed(true);
+				if(!(temp->getIsInitialized())) {
+					std::cout << "[ERROR]: " << $1.name << " used before initialized." << std::endl;
+				}
 			}
 		}
 	}
@@ -417,11 +420,23 @@ assignment
 		$$.nd->insert($1.nd);
 		$$.ASTnd = $1.ASTnd;
 	}
-	| unary_operation assign_operator assignment {
+	| IDENTIFIER assign_operator assignment {
 		$$.nd = new Node("assignment"); 
 		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd);
 		$$.ASTnd = $2.ASTnd;
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
+
+		Symbol* sym = gSymbolTable->LookUp($1.name);
+		if(NULL == sym) {
+			std::cout << "[ERROR]: " << $1.name << " undefined variable." << std::endl;
+		} else {
+			VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
+			if(NULL == temp) {
+				std::cout << "[ERROR]: " << $1.name << " is a function not a variable." << std::endl;
+			} else {
+				temp->setIsInitialized(true);
+			}
+		}
 	}
 	;
 
