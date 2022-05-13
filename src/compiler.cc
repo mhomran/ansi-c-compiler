@@ -28,27 +28,31 @@ main(void)
   bool ParseError;
   int ret;
   
-  std::cout << "[INFO]: Start Pasing ..." << std::endl;
-  ret = yyparse();
-  ParseError = 0 != ret;
+  try {
+    std::cout << "[INFO]: Start Parsing ..." << std::endl;
+    ret = yyparse();
+    ParseError = 0 != ret;
 
-  std::cout << std::endl;
-  
-  if(ParseError) {
-    std::cout << "[ERROR]: Parser Failed. Exiting..." << std::endl;
+    if(ParseError) {
+      std::cout << "[ERROR]: Parser Failed. Exiting..." << std::endl;
+    }
+    else {
+      std::cout << "[INFO]: Finish Parsing." << std::endl;
+
+      std::cout << "[INFO]: Start Writing parse_tree.dot file..." << std::endl;
+      Node* parseTree = getParseTree();
+      Node::PrintParseTree(parseTree, "parse_tree");
+      std::cout << "[INFO]: Finish Writing parse_tree.dot file." << std::endl;
+      
+      std::cout << "[INFO]: Start Writing AST.dot file..." << std::endl;
+      Node* AST = getAST();
+      Node::PrintParseTree(AST, "AST");
+      std::cout << "[INFO]: Finish Writing AST.dot file." << std::endl;
+    }
   }
-  else {
-    std::cout << "[INFO]: Finish Parsing." << std::endl;
-
-    std::cout << "[INFO]: Start Writing parse_tree.dot file..." << std::endl;
-    Node* parseTree = getParseTree();
-    Node::PrintParseTree(parseTree, "parse_tree");
-    std::cout << "[INFO]: Finish Writing parse_tree.dot file." << std::endl;
-    
-    std::cout << "[INFO]: Start Writing AST.dot file..." << std::endl;
-    Node* AST = getAST();
-    Node::PrintParseTree(AST, "AST");
-    std::cout << "[INFO]: Finish Writing AST.dot file." << std::endl;
+  catch(std::string x)
+  {
+    std::cout << x;
   }
 	yydtor();
   

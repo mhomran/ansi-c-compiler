@@ -43,6 +43,7 @@
 %{
 /* ------------------------------- includes -------------------------------- */
 #include <iostream>
+#include <sstream>
 #include "../tree/tree.hh"
 #include "../table/table.hh"
 #include "../sym/var_sym/var_sym.hh"
@@ -99,17 +100,21 @@ basic_element
 		$$.nd = new Node($1.name);
 		$$.ASTnd = new Node("identifier");
 
+    std::ostringstream buffer;
 		Symbol* sym = gSymbolTable->LookUp($1.name);
 		if(NULL == sym) {
-			std::cout << "[ERROR]: @ line " << line << " " << $1.name << " undefined variable." << std::endl;
+			buffer << "[ERROR]: @ line " << line << " " << $1.name << " undefined variable." << std::endl;
+			throw buffer.str();
 		} else {
 			VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
 			if(NULL == temp) {
-				std::cout << "[ERROR]: @ line " << line << " " << $1.name << " is a function not a variable." << std::endl;
+				buffer << "[ERROR]: @ line " << line << " " << $1.name << " is a function not a variable." << std::endl;
+				throw buffer.str();
 			} else {
 				temp->setIsUsed(true);
 				if(!(temp->getIsInitialized())) {
-					std::cout << "[ERROR]: @ line " << line << " " << $1.name << " used before initialized." << std::endl;
+					buffer << "[ERROR]: @ line " << line << " " << $1.name << " used before initialized." << std::endl;
+					throw buffer.str();
 				}
 			}
 		}
@@ -427,19 +432,23 @@ assignment
 		$$.ASTnd = $2.ASTnd;
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 
+    std::ostringstream buffer;
 		Symbol* sym = gSymbolTable->LookUp($1.name);
 		if(NULL == sym) {
-			std::cout << "[ERROR]: @ line " << line << " " 
+			buffer << "[ERROR]: @ line " << line << " " 
 			<< $1.name << " undefined variable." << std::endl;
+			throw buffer.str();
 		} else {
 			VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
 			if(NULL == temp) {
-				std::cout << "[ERROR]: @ line " << line << " " 
+				buffer << "[ERROR]: @ line " << line << " " 
 				<< $1.name << " is a function not a variable." << std::endl;
+				throw buffer.str();
 			} else {
 				if(temp->getIsConst()) {
-					std::cout << "[ERROR]: @ line " << line << " " 
+					buffer << "[ERROR]: @ line " << line << " " 
 					<< $1.name << " is a read-only." << std::endl;
+					throw buffer.str();
 				} else {
 					temp->setIsInitialized(true);
 				}
@@ -908,10 +917,12 @@ Node* getAST ()
 void 
 insertVariable(string name, Datatype dt, bool isConst, bool isInitialized)
 {
+	std::ostringstream buffer;
 	// Lookup the symbol table, if exist return symantic error (redefinition)
 	Symbol* sym = gSymbolTable->LookUp(name);
 	if(NULL != sym && sym->getScope() == gSymbolTable->getLevel()) {
-		std::cout << "[ERROR]: @ line " << line << " " << name << "redefinition" << std::endl;
+		buffer << "[ERROR]: @ line " << line << " " << name << "redefinition" << std::endl;
+		throw buffer.str();
 	} 
 	// otherwise, add it to the symbol table
 	else {
