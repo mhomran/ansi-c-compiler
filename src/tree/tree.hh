@@ -9,6 +9,8 @@
  * 
  */
 
+#pragma once
+
 #include <vector>
 #include <string>
 #include <fstream>
@@ -25,8 +27,11 @@ class Node
 		static int NodesCount;
 
 		Node(std::string Name);
+		virtual ~Node();
 		Node* insert(Node* node);
 		std::vector<Node *> getChildren();
+		virtual void PrintNodeName(void);
+
 		static void PrintParseTree(Node * root, std::string fname);
 		static void DeleteTree(Node* node);
 };

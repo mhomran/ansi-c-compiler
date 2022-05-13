@@ -31,10 +31,22 @@ SymbolTable::~SymbolTable() {
 }
 
 Symbol* SymbolTable::LookUp(string name) {
+  Symbol* res = NULL;
+  SymbolTable* table = this;
 
+  do {
+    if (symbols.find(name) != symbols.end()) {
+      res = symbols.find(name)->second;
+      break;
+    }
+    table = table->prev;
+  } while(NULL != table);
+
+  return res;
 }
 
-bool SymbolTable::Insert(Symbol* sym) {
+void SymbolTable::insert(string name, Symbol* sym) {
+  symbols.insert(pair<string, Symbol*>(name, sym));
 
 }
 

@@ -16,8 +16,8 @@ using namespace std;
 
 class Symbol {
   string name;
-  int scope;
   
   public:
+  int scope;
   Symbol(string name, int scope);
 };

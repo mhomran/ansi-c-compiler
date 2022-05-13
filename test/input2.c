@@ -9,4 +9,11 @@
  * 
  */
 
-const int a = 6;
+const int a;
+const int b;
+int main() {
+  const int a; /* Shadowing */
+  {
+    const int a; /* another shadowing */
+  }
+}

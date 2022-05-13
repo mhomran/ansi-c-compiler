@@ -18,17 +18,18 @@
 using namespace std;
 
 class SymbolTable {
-  SymbolTable* prev;
-  int level;
   map<string, Symbol*> symbols;
   
   static int currLevel;
 
   public:
+    SymbolTable* prev;
+    int level;
+
     SymbolTable();
     SymbolTable(SymbolTable* prev);
     ~SymbolTable();
     
     Symbol* LookUp(string);
-    bool Insert(Symbol*);
+    void insert(string, Symbol*);
 };

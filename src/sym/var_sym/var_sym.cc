@@ -13,7 +13,6 @@
 #include "var_sym.hh"
 
 VarSymbol::VarSymbol(string name, int scope, Datatype datatype) 
-: datatype{datatype},
-Symbol(name, scope)
+: Symbol(name, scope), datatype{datatype}
 {
 }

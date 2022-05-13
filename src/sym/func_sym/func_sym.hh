@@ -14,7 +14,7 @@
 
 #include <vector>
 #include "../sym.hh"
-#include "../datatype.hh"
+#include "../../common/datatype.hh"
 
 class FuncSymbol : public Symbol {
   Datatype returnDatatype;

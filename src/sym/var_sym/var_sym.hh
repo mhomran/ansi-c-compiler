@@ -13,7 +13,7 @@
 #pragma once
 
 #include "../sym.hh"
-#include "../datatype.hh"
+#include "../../common/datatype.hh"
 
 class VarSymbol : public Symbol {
   Datatype datatype;

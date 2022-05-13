@@ -30,7 +30,7 @@
 %token <TreeNode> XOR_ASSIGN OR_ASSIGN
 
 // Data types
-%token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOID
+%token CHAR SHORT INT LONG FLOAT DOUBLE CONST VOID
 
 // If-then-else stmt, while loops, repeat-until loops,
 // for loops, switch stmt
@@ -45,12 +45,14 @@
 #include <iostream>
 #include "../tree/tree.hh"
 #include "../table/table.hh"
+#include "../sym/var_sym/var_sym.hh"
+#include "../tree/ast/ast.hh"
 /* ------------------------------------------------------------------------- */
 
 /* -------------------------- global variables ----------------------------- */
 static Node* gParseTree;
 static Node* gAST;
-static SymbolTable* gSymTable = new SymbolTable();
+static SymbolTable* gSymbolTable = new SymbolTable();
 /* ------------------------------------------------------------------------- */
 
 /* ----------------------- extern global variables ------------------------- */
@@ -74,7 +76,7 @@ Node* getParseTree ();
 %type <TreeNode> return parameters arguments
 %type <TreeNode> mul_div_mod add_sub shift relation equal_not_equal bitwise_and
 %type <TreeNode> xor bitwise_or and or assign_operator expression
-%type <TreeNode> switch switch_body block loop
+%type <TreeNode> switch switch_body block start_block end_block loop
 %type <TreeNode> assignment stmts stmt other_stmt
 %type <TreeNode> MIF UIF 
 
@@ -444,12 +446,22 @@ expression
 	;
 
 declaration
-	: var_const IDENTIFIER';' {
+	: var_const IDENTIFIER ';' {
 		$$.nd = new Node("declaration");
-		$$.nd->insert($1.nd);
-		$$.nd->insert(new Node($2.name));
-		$$.nd->insert(new Node(";"));
-		$$.ASTnd = new Node("declaration");
+		$$.nd->insert($1.nd)->insert(new Node($2.name))->insert(new Node(";"));
+		$$.ASTnd = new Declaration("declaration", 
+		dynamic_cast<VarConst*>($1.ASTnd), $2.name);
+		
+		// Lookup the symbol table, if exist return symantic error (redefinition)
+		Symbol* sym = gSymbolTable->LookUp($2.name);
+		if(NULL != sym && sym->scope == gSymbolTable->level) {
+			std::cout << "[ERROR]: redefinition" << std::endl;
+		} 
+		// otherwise, add it to the symbol table
+		else {
+			sym = new Symbol($2.name, gSymbolTable->level);
+			gSymbolTable->insert($2.name, sym);
+		}
 	}
 	| var_const IDENTIFIER '=' assignment ';' {
 		$$.nd = new Node("declaration");
@@ -458,7 +470,7 @@ declaration
 		$$.nd->insert(new Node("="));
 		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node(";"));
-		$$.ASTnd = new Node("declaration");
+		$$.ASTnd = new Declaration("declaration", dynamic_cast<VarConst*>($1.ASTnd), $2.name);
 		$$.ASTnd->insert($4.ASTnd);
 	}
 	;
@@ -467,23 +479,51 @@ var_const
 	: datatype {
 		$$.nd = new Node("var_const");
 		$$.nd->insert($1.nd);
+		$$.ASTnd = new VarConst("var_const", dynamic_cast<DatatypeNode *>($1.ASTnd), false);
 	}
 	| CONST datatype {
 		$$.nd = new Node("var_const");
 		$$.nd->insert(new Node("const"));
+		$$.ASTnd = new VarConst("var_const", dynamic_cast<DatatypeNode *>($2.ASTnd), true);
 	}
 	;
 
 datatype
-	: VOID { $$.nd = new Node("datatype"); $$.nd->insert(new Node("void")); }
-	| CHAR { $$.nd = new Node("datatype"); $$.nd->insert(new Node("char")); }
-	| SHORT { $$.nd = new Node("datatype"); $$.nd->insert(new Node("short")); }
-	| INT { $$.nd = new Node("datatype"); $$.nd->insert(new Node("int")); }
-	| LONG { $$.nd = new Node("datatype"); $$.nd->insert(new Node("long")); }
-	| FLOAT { $$.nd = new Node("datatype"); $$.nd->insert(new Node("float")); }
-	| DOUBLE { $$.nd = new Node("datatype"); $$.nd->insert(new Node("double")); }
-	| SIGNED { $$.nd = new Node("datatype"); $$.nd->insert(new Node("signed")); }
-	| UNSIGNED { $$.nd = new Node("datatype"); $$.nd->insert(new Node("unsigned")); }
+	: VOID { 
+		$$.nd = new Node("datatype"); 
+		$$.nd->insert(new Node("void")); 
+		$$.ASTnd = new DatatypeNode("void", Datatype::VOID);
+	}
+	| CHAR { 
+		$$.nd = new Node("datatype"); 
+		$$.nd->insert(new Node("char")); 
+		$$.ASTnd = new DatatypeNode("char", Datatype::CHAR);
+	}
+	| SHORT { 
+		$$.nd = new Node("datatype"); 
+		$$.nd->insert(new Node("short")); 
+		$$.ASTnd = new DatatypeNode("short", Datatype::SHORT);
+	}
+	| INT { 
+		$$.nd = new Node("datatype"); 
+		$$.nd->insert(new Node("int")); 
+		$$.ASTnd = new DatatypeNode("int", Datatype::INT);
+	}
+	| LONG { 
+		$$.nd = new Node("datatype"); 
+		$$.nd->insert(new Node("long")); 
+		$$.ASTnd = new DatatypeNode("long", Datatype::LONG);
+	}
+	| FLOAT { 
+		$$.nd = new Node("datatype"); 
+		$$.nd->insert(new Node("float")); 
+		$$.ASTnd = new DatatypeNode("float", Datatype::FLOAT);
+	}
+	| DOUBLE { 
+		$$.nd = new Node("datatype"); 
+		$$.nd->insert(new Node("double")); 
+		$$.ASTnd = new DatatypeNode("double", Datatype::DOUBLE);
+	}
 	;
 
 
@@ -551,32 +591,39 @@ UIF
   }
   ;
 
+start_block 
+	: '{' { 
+		$$.nd = new Node("{"); 
+		gSymbolTable = new SymbolTable(gSymbolTable);
+	}
+	;
+end_block 
+	: '}' { 
+		$$.nd = new Node("}"); 
+		SymbolTable* temp = gSymbolTable;
+		gSymbolTable = gSymbolTable->prev;
+		delete temp;
+	}
+	;
+
 block
-	: '{' '}' {
+	: start_block end_block {
 		$$.nd = new Node("block"); 
-		$$.nd->insert(new Node("{")); 
-		$$.nd->insert(new Node("}")); 
+		$$.nd->insert($1.nd)->insert($2.nd); 
 	}
-	| '{' stmts '}' {
+	| start_block stmts end_block {
 		$$.nd = new Node("block"); 
-		$$.nd->insert(new Node("{")); 
-		$$.nd->insert($2.nd); 
-		$$.nd->insert(new Node("}")); 		
+		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd); 
 		$$.ASTnd = $2.ASTnd;
 	}
-	| '{' declarations '}' {
+	| start_block declarations end_block {
 		$$.nd = new Node("block"); 
-		$$.nd->insert(new Node("{")); 
-		$$.nd->insert($2.nd); 
-		$$.nd->insert(new Node("}")); 		
+		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd); 
 		$$.ASTnd = $2.ASTnd;
 	}
-	| '{' declarations stmts '}' {
+	| start_block declarations stmts end_block {
 		$$.nd = new Node("block"); 
-		$$.nd->insert(new Node("{")); 
-		$$.nd->insert($2.nd); 
-		$$.nd->insert($3.nd); 
-		$$.nd->insert(new Node("}")); 
+		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd)->insert($4.nd); 
 		$$.ASTnd = $2.ASTnd;
 		$$.ASTnd->insert($3.ASTnd);
 	}
@@ -650,7 +697,7 @@ switch_body
 //action: read identifier and store it in a temp, call switch body
 //ref: https://fog.ccsf.edu/~gboyd/cs270/online/mipsII/switch.html
 switch
-	: SWITCH '(' IDENTIFIER ')' '{' switch_body '}' {
+	: SWITCH '(' IDENTIFIER ')' start_block switch_body end_block {
 		$$.nd = new Node("switch"); 
 		$$.nd->insert(new Node("("));
 		$$.nd->insert(new Node($3.name));

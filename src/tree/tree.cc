@@ -86,4 +86,11 @@ void Node::PrintLabels(Node* root, std::ofstream& fd)
 	}
 }
 
+void Node::PrintNodeName(void) {
+	std::cout << name;
+}
+
+Node::~Node() {
+	
+}
 int Node::NodesCount = 0;
