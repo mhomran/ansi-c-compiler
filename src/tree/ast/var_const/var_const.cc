@@ -17,3 +17,11 @@ VarConst::VarConst(string Name, DatatypeNode* datatypeNd, bool isConst)
 , isConst{isConst} {
 
 }
+
+DatatypeNode* VarConst::getDatatypeNd() {
+  return datatypeNd;
+}
+
+bool VarConst::getIsConst() {
+  return isConst;  
+}

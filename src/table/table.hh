@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 #include "../sym/sym.hh"
+#include "../sym/var_sym/var_sym.hh"
 
 using namespace std;
 
@@ -21,15 +22,17 @@ class SymbolTable {
   map<string, Symbol*> symbols;
   
   static int currLevel;
+  SymbolTable* prev;
+  int level;
 
   public:
-    SymbolTable* prev;
-    int level;
-
     SymbolTable();
     SymbolTable(SymbolTable* prev);
     ~SymbolTable();
     
     Symbol* LookUp(string);
     void insert(string, Symbol*);
+
+    SymbolTable* getPrev(void);
+    int getLevel(void);
 };

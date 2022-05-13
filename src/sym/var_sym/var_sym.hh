@@ -17,7 +17,12 @@
 
 class VarSymbol : public Symbol {
   Datatype datatype;
+  bool isConst;
+  bool isInitialized;
+  bool isUsed;
 
   public:
-  VarSymbol(string name, int scope, Datatype);
+  VarSymbol(string name, int scope, Datatype, bool isConst, bool isInitialized);
+  bool getIsUsed(void);
+  void setIsUsed(bool);
 };

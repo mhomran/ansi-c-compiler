@@ -12,7 +12,19 @@
 
 #include "var_sym.hh"
 
-VarSymbol::VarSymbol(string name, int scope, Datatype datatype) 
-: Symbol(name, scope), datatype{datatype}
+VarSymbol::VarSymbol(string name, int scope, Datatype datatype, bool isConst, bool isInitialized) 
+: Symbol(name, scope)
+, datatype{datatype}
+, isConst{isConst}
+, isInitialized{isInitialized}
+, isUsed{false}
 {
+}
+
+bool VarSymbol::getIsUsed(void) {
+  return isUsed;
+}
+
+void VarSymbol::setIsUsed(bool isUsed) {
+  this->isUsed = isUsed;
 }

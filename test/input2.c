@@ -9,11 +9,13 @@
  * 
  */
 
-const int a;
-const int b;
+const int a; /* uninitalized */
+const int b; /* uninitalized */
 int main() {
-  const int a; /* Shadowing */
+  const int a; /* Shadowing + uninitalized */
   {
-    const int a; /* another shadowing */
+    int a = 2; /* another shadowing + initialized + used */
+    a = b + 2;
+    a = c + 2; /* undefined */
   }
 }

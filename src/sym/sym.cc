@@ -9,10 +9,24 @@
  * 
  */
 
+#include <iostream>
 #include "sym.hh"
+using namespace std;
 
 Symbol::Symbol(string name, int scope)
 : name{name}
 , scope{scope} {
 
+}
+
+int Symbol::getScope() {
+  return scope;
+}
+
+Symbol::~Symbol() {
+
+}
+
+void Symbol::print() {
+  cout << name << endl;
 }

@@ -10,6 +10,8 @@
  */
 
 #include "table.hh"
+#include <iostream>
+using namespace std;
 
 SymbolTable::SymbolTable()
 : prev{NULL}
@@ -26,7 +28,13 @@ SymbolTable::SymbolTable(SymbolTable* prev)
 SymbolTable::~SymbolTable() {
   currLevel++;
   for(auto symbol : symbols) {
-    delete symbol.second;
+    Symbol* sym = symbol.second;
+    string symName = symbol.first;
+    VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
+    if(NULL != temp && !(temp->getIsUsed())) {
+      cout << endl << "[WARNING]: " << symName << " is Unsed." << endl;
+    }
+    delete sym;
   }
 }
 
@@ -35,8 +43,8 @@ Symbol* SymbolTable::LookUp(string name) {
   SymbolTable* table = this;
 
   do {
-    if (symbols.find(name) != symbols.end()) {
-      res = symbols.find(name)->second;
+    if (table->symbols.find(name) != table->symbols.end()) {
+      res = table->symbols.find(name)->second;
       break;
     }
     table = table->prev;
@@ -48,6 +56,14 @@ Symbol* SymbolTable::LookUp(string name) {
 void SymbolTable::insert(string name, Symbol* sym) {
   symbols.insert(pair<string, Symbol*>(name, sym));
 
+}
+
+SymbolTable* SymbolTable::getPrev(void) {
+  return prev;
+}
+
+int SymbolTable::getLevel(void) {
+  return level;
 }
 
 int SymbolTable::currLevel = 0;

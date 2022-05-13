@@ -65,6 +65,8 @@ int yylex(void);
 void yyerror (char const *s);
 
 Node* getParseTree ();
+Node* getAST();
+void insertVariable(string, Datatype, bool, bool);
 /* ------------------------------------------------------------------------- */
 %}
 
@@ -95,6 +97,18 @@ basic_element
 	: IDENTIFIER { 
 		$$.nd = new Node($1.name);
 		$$.ASTnd = new Node("identifier");
+
+		Symbol* sym = gSymbolTable->LookUp($1.name);
+		if(NULL == sym) {
+			std::cout << "[ERROR]: " << $1.name << " undefined variable." << std::endl;
+		} else {
+			VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
+			if(NULL == temp) {
+				std::cout << "[ERROR]: " << $1.name << " is a function not a variable." << std::endl;
+			} else {
+				temp->setIsUsed(true);
+			}
+		}
 	}
 	| CONSTANT { 
 		$$.nd = new Node($1.name); 
@@ -452,16 +466,10 @@ declaration
 		$$.ASTnd = new Declaration("declaration", 
 		dynamic_cast<VarConst*>($1.ASTnd), $2.name);
 		
-		// Lookup the symbol table, if exist return symantic error (redefinition)
-		Symbol* sym = gSymbolTable->LookUp($2.name);
-		if(NULL != sym && sym->scope == gSymbolTable->level) {
-			std::cout << "[ERROR]: redefinition" << std::endl;
-		} 
-		// otherwise, add it to the symbol table
-		else {
-			sym = new Symbol($2.name, gSymbolTable->level);
-			gSymbolTable->insert($2.name, sym);
-		}
+		VarConst* temp = dynamic_cast<VarConst*>($1.ASTnd);
+		Datatype dt = temp->getDatatypeNd()->getDatatype();
+		bool isConst = temp->getIsConst();
+		insertVariable($2.name, dt, isConst, false);
 	}
 	| var_const IDENTIFIER '=' assignment ';' {
 		$$.nd = new Node("declaration");
@@ -472,6 +480,11 @@ declaration
 		$$.nd->insert(new Node(";"));
 		$$.ASTnd = new Declaration("declaration", dynamic_cast<VarConst*>($1.ASTnd), $2.name);
 		$$.ASTnd->insert($4.ASTnd);
+
+		VarConst* temp = dynamic_cast<VarConst*>($1.ASTnd);
+		Datatype dt = temp->getDatatypeNd()->getDatatype();
+		bool isConst = temp->getIsConst();
+		insertVariable($2.name, dt, isConst, true);	
 	}
 	;
 
@@ -601,7 +614,7 @@ end_block
 	: '}' { 
 		$$.nd = new Node("}"); 
 		SymbolTable* temp = gSymbolTable;
-		gSymbolTable = gSymbolTable->prev;
+		gSymbolTable = gSymbolTable->getPrev();
 		delete temp;
 	}
 	;
@@ -857,6 +870,21 @@ Node* getParseTree ()
 Node* getAST ()
 {
 	return gAST;
+}
+
+void 
+insertVariable(string name, Datatype dt, bool isConst, bool isInitialized)
+{
+	// Lookup the symbol table, if exist return symantic error (redefinition)
+	Symbol* sym = gSymbolTable->LookUp(name);
+	if(NULL != sym && sym->getScope() == gSymbolTable->getLevel()) {
+		std::cout << "[ERROR]: " << name << "redefinition" << std::endl;
+	} 
+	// otherwise, add it to the symbol table
+	else {
+		sym = new VarSymbol(name, gSymbolTable->getLevel(), dt, isConst, isInitialized);
+		gSymbolTable->insert(name, sym);
+	}
 }
 /* ------------------------------------------------------------------------- */
 
