@@ -98,7 +98,7 @@ void insertVariable(string, Datatype, bool, bool);
 basic_element
 	: IDENTIFIER { 
 		$$.nd = new Node($1.name);
-		$$.ASTnd = new Node("identifier");
+		$$.ASTnd = new Identifier($1.name);
 
     std::ostringstream buffer;
 		Symbol* sym = gSymbolTable->LookUp($1.name);
@@ -113,15 +113,14 @@ basic_element
 			} else {
 				temp->setIsUsed(true);
 				if(!(temp->getIsInitialized())) {
-					buffer << "[ERROR]: @ line " << line << " " << $1.name << " used before initialized." << std::endl;
-					throw buffer.str();
+					cout << "[WARNING]: @ line " << line << " " << $1.name << " used before initialized." << std::endl;
 				}
 			}
 		}
 	}
 	| CONSTANT { 
 		$$.nd = new Node($1.name); 
-		$$.ASTnd = new Node("constant");
+		$$.ASTnd = new Constant($1.name);
 	}
 	| '(' expression ')' {
 		$$.nd = new Node("basic_element");
@@ -186,12 +185,12 @@ unary_operator
 	: '~' { 
 		$$.nd = new Node("unary_operator"); 
 		$$.nd->insert(new Node("~")); 
-		$$.ASTnd = new Node("bitwise_not");
+		$$.ASTnd = new BitwiseNot("bitwise_not");
 	}
 	| '!' { 
 		$$.nd = new Node("unary_operator"); 
 		$$.nd->insert(new Node("!")); 
-		$$.ASTnd = new Node("not");
+		$$.ASTnd = new Not("not");
 	}
 	;
 
@@ -207,7 +206,7 @@ mul_div_mod
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("*"));
 		$$.nd->insert($3.nd);
-		$$.ASTnd = new Node("*");
+		$$.ASTnd = new Mul("*");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| mul_div_mod '/' unary_operation {
@@ -215,7 +214,7 @@ mul_div_mod
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("/"));
 		$$.nd->insert($3.nd);
-		$$.ASTnd = new Node("/");
+		$$.ASTnd = new Div("/");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| mul_div_mod '%' unary_operation {
@@ -239,7 +238,7 @@ add_sub
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("+"));
 		$$.nd->insert($3.nd);
-		$$.ASTnd = new Node("+");
+		$$.ASTnd = new Add("+");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| add_sub '-' mul_div_mod {
@@ -247,7 +246,7 @@ add_sub
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("-"));
 		$$.nd->insert($3.nd);
-		$$.ASTnd = new Node("-");
+		$$.ASTnd = new Sub("-");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
@@ -263,7 +262,7 @@ shift
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("<<"));
 		$$.nd->insert($3.nd);		
-		$$.ASTnd = new Node("<<");
+		$$.ASTnd = new ShiftLeft("<<");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| shift RIGHT_OP add_sub {
@@ -271,7 +270,7 @@ shift
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(">>"));
 		$$.nd->insert($3.nd);			
-		$$.ASTnd = new Node(">>");
+		$$.ASTnd = new ShiftRight(">>");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
@@ -351,7 +350,7 @@ bitwise_and
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("$"));
 		$$.nd->insert($3.nd);			
-		$$.ASTnd = new Node("&");
+		$$.ASTnd = new BitwiseAnd("&");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
@@ -367,7 +366,7 @@ xor
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("^"));
 		$$.nd->insert($3.nd);			
-		$$.ASTnd = new Node("^");
+		$$.ASTnd = new BitwiseXor("^");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
@@ -383,7 +382,7 @@ bitwise_or
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("|"));
 		$$.nd->insert($3.nd);			
-		$$.ASTnd = new Node("|");
+		$$.ASTnd = new BitwiseOr("|");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
@@ -399,7 +398,7 @@ and
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("&&"));
 		$$.nd->insert($3.nd);			
-		$$.ASTnd = new Node("&&");
+		$$.ASTnd = new And("&&");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
@@ -415,7 +414,7 @@ or
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("||"));
 		$$.nd->insert($3.nd);
-		$$.ASTnd = new Node("||");
+		$$.ASTnd = new Or("||");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
@@ -436,7 +435,7 @@ assignment
 		Symbol* sym = gSymbolTable->LookUp($1.name);
 		if(NULL == sym) {
 			buffer << "[ERROR]: @ line " << line << " " 
-			<< $1.name << " undefined variable." << std::endl;
+			<< $1.name << " undefined symbol." << std::endl;
 			throw buffer.str();
 		} else {
 			VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
@@ -510,7 +509,8 @@ declaration
 		$$.nd->insert(new Node("="));
 		$$.nd->insert($4.nd);
 		$$.nd->insert(new Node(";"));
-		$$.ASTnd = new Declaration("declaration", dynamic_cast<VarConst*>($1.ASTnd), $2.name);
+		$$.ASTnd = new Declaration("declaration", 
+		dynamic_cast<VarConst*>($1.ASTnd), $2.name, true);
 		$$.ASTnd->insert($4.ASTnd);
 
 		VarConst* temp = dynamic_cast<VarConst*>($1.ASTnd);

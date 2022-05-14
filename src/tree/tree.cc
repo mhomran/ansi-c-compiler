@@ -13,9 +13,7 @@
 #include "tree.hh"
 
 
-Node::Node(std::string Name)
-	: name{Name}
-	, id{NodesCount} {
+Node::Node(std::string Name): id{NodesCount}, name{Name} {
 	NodesCount++;
 }
 
@@ -50,7 +48,7 @@ void Node::PrintParseTree(Node * root, std::string fname) {
 		}
 	}
 
-	fd << "}"<< std::endl; 
+	fd << "}" << std::endl; 
 	fd.close();
 }
 
@@ -86,11 +84,14 @@ void Node::PrintLabels(Node* root, std::ofstream& fd)
 	}
 }
 
-void Node::PrintNodeName(void) {
-	std::cout << name;
-}
-
 Node::~Node() {
 	
 }
+
+void Node::generate(std::ofstream& fd) {
+	for (size_t i=0; i < children.size(); i++){
+		if(NULL != children[i]) children[i]->generate(fd);
+	}
+}
+
 int Node::NodesCount = 0;

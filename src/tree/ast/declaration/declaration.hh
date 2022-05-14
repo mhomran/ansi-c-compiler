@@ -18,7 +18,9 @@ using namespace std;
 class Declaration : public Node {
   VarConst* varConst;
   string identifier;
+  bool isAssigned;
 
   public:
-  Declaration(string, VarConst*, string);
+  Declaration(string, VarConst*, string, bool isAssigned = false);
+  virtual void generate(ofstream&);
 };

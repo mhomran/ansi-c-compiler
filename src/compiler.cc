@@ -48,6 +48,13 @@ main(void)
       Node* AST = getAST();
       Node::PrintParseTree(AST, "AST");
       std::cout << "[INFO]: Finish Writing AST.dot file." << std::endl;
+
+      std::cout << "[INFO]: Start Writing output.txt file..." << std::endl;
+      std::ofstream fd;
+      fd.open ("output.txt");
+      AST->generate(fd);
+      fd.close();
+      std::cout << "[INFO]: Finish Writing output.txt file." << std::endl;
     }
   }
   catch(std::string x)

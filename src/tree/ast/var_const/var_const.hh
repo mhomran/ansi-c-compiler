@@ -21,6 +21,7 @@ class VarConst : public Node {
 
   public:
   VarConst(string Name, DatatypeNode* datatypeNd, bool isConst);
+  ~VarConst();
   DatatypeNode* getDatatypeNd();
   bool getIsConst();
 };

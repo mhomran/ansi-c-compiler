@@ -11,10 +11,25 @@
 
 #include "declaration.hh"
 
-Declaration::Declaration(string name, VarConst* varConst, string identifier) 
+Declaration::Declaration(string name, VarConst* varConst, 
+string identifier, bool isAssigned) 
 : Node(name),
 varConst{varConst},
-identifier{identifier}
+identifier{identifier},
+isAssigned{isAssigned}
 {
 
+}
+
+void Declaration::generate(ofstream& fd) {
+  fd << ".WORD " << identifier << endl;
+  if(isAssigned) {
+    Node::children[0]->generate(fd);
+    fd << "POP " << identifier << endl;
+    for (size_t i=1; i < Node::children.size(); i++){
+      if(NULL != children[i]) Node::children[i]->generate(fd);
+    }
+  } else {
+    Node::generate(fd);
+  }
 }

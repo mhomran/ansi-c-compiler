@@ -25,3 +25,7 @@ DatatypeNode* VarConst::getDatatypeNd() {
 bool VarConst::getIsConst() {
   return isConst;  
 }
+
+VarConst::~VarConst() {
+  delete datatypeNd;
+}

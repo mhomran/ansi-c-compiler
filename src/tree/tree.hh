@@ -17,12 +17,12 @@
 
 class Node
 {
-	std::vector<Node *>children;
-	std::string name;
 	int id;
 
 	static void PrintLabels(Node* root, std::ofstream& fd);
-
+	protected:
+	std::string name;
+	std::vector<Node *>children;
 	public:
 		static int NodesCount;
 
@@ -30,7 +30,7 @@ class Node
 		virtual ~Node();
 		Node* insert(Node* node);
 		std::vector<Node *> getChildren();
-		virtual void PrintNodeName(void);
+		virtual void generate(std::ofstream&);
 
 		static void PrintParseTree(Node * root, std::string fname);
 		static void DeleteTree(Node* node);
