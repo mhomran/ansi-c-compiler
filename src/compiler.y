@@ -286,7 +286,7 @@ relation
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("<"));
 		$$.nd->insert($3.nd);	
-		$$.ASTnd = new Node("<");
+		$$.ASTnd = new Lower("<");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| relation '>' shift {
@@ -294,7 +294,7 @@ relation
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(">"));
 		$$.nd->insert($3.nd);		
-		$$.ASTnd = new Node(">");
+		$$.ASTnd = new Greater(">");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| relation LE_OP shift {
@@ -302,7 +302,7 @@ relation
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("<="));
 		$$.nd->insert($3.nd);
-		$$.ASTnd = new Node("<=");
+		$$.ASTnd = new LowerEqual("<=");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| relation GE_OP shift {
@@ -310,7 +310,7 @@ relation
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node(">="));
 		$$.nd->insert($3.nd);
-		$$.ASTnd = new Node(">=");
+		$$.ASTnd = new GreaterEqual(">=");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
@@ -326,7 +326,7 @@ equal_not_equal
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("=="));
 		$$.nd->insert($3.nd);		
-		$$.ASTnd = new Node("==");
+		$$.ASTnd = new Equal("==");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	| equal_not_equal NE_OP relation {
@@ -334,7 +334,7 @@ equal_not_equal
 		$$.nd->insert($1.nd);
 		$$.nd->insert(new Node("!="));
 		$$.nd->insert($3.nd);		
-		$$.ASTnd = new Node("!=");
+		$$.ASTnd = new NotEqual("!=");
 		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
 	}
 	;
