@@ -19,3 +19,5 @@
 #include "identifier/identifier.hh"
 #include "constant/constant.hh"
 #include "relation/relation.hh"
+#include "assignment/assignment.hh"
+#include "assign_op/assign_op.hh"

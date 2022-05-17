@@ -428,8 +428,8 @@ assignment
 	| IDENTIFIER assign_operator assignment {
 		$$.nd = new Node("assignment"); 
 		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd);
-		$$.ASTnd = $2.ASTnd;
-		$$.ASTnd->insert($1.ASTnd)->insert($3.ASTnd);
+		$$.ASTnd = new Assignment("assignment", $1.name); 
+		$$.ASTnd->insert($3.ASTnd)->insert($2.ASTnd);
 
     std::ostringstream buffer;
 		Symbol* sym = gSymbolTable->LookUp($1.name);
@@ -460,18 +460,18 @@ assign_operator
 	: '=' { 
 		$$.nd = new Node($$.name); 
 		$$.nd->insert(new Node("=")); 
-		$$.ASTnd = new Node("="); 
+		$$.ASTnd = new AssignOp("="); 
 	}
-	| MUL_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| DIV_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| MOD_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| ADD_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| SUB_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| LEFT_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| RIGHT_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| AND_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| XOR_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
-	| OR_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Node($$.name); }
+	| MUL_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Mul($$.name); }
+	| DIV_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Div($$.name); }
+	| MOD_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Mod($$.name); }
+	| ADD_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Add($$.name); }
+	| SUB_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new Sub($$.name); }
+	| LEFT_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new ShiftLeft($$.name); }
+	| RIGHT_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new ShiftRight($$.name); }
+	| AND_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new BitwiseAnd($$.name); }
+	| XOR_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new BitwiseXor($$.name); }
+	| OR_ASSIGN { $$.nd = new Node($$.name); $$.ASTnd = new BitwiseOr($$.name); }
 	;
 
 expression
