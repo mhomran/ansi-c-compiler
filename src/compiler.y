@@ -781,7 +781,7 @@ loop
 		$$.ASTnd = new While("while");
 		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd);
 	}
-	| DO stmt WHILE '(' expression ')' ';' {
+	| DO block WHILE '(' expression ')' ';' {
 		$$.nd = new Node("loop"); 
 		$$.nd->insert(new Node("do"));
 		$$.nd->insert($2.nd);
@@ -790,19 +790,8 @@ loop
 		$$.nd->insert($5.nd);
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert(new Node(";"));
-		$$.ASTnd = new Node("DoWhile");
+		$$.ASTnd = new DoWhile("DoWhile");
 		$$.ASTnd->insert($2.ASTnd)->insert($5.ASTnd);
-	}
-	| FOR '(' expression_stmt expression_stmt ')' block {
-		$$.nd = new Node("loop"); 
-		$$.nd->insert(new Node("for"));
-		$$.nd->insert(new Node("("));
-		$$.nd->insert($3.nd);
-		$$.nd->insert($4.nd);
-		$$.nd->insert(new Node(")"));
-		$$.nd->insert($6.nd);
-		$$.ASTnd = new Node("for");
-		$$.ASTnd->insert($3.ASTnd)->insert($4.ASTnd)->insert($6.ASTnd);
 	}
 	| FOR '(' expression_stmt expression_stmt expression ')' block {
 		$$.nd = new Node("loop"); 
