@@ -20,6 +20,8 @@ Identifier::Identifier(string name, Datatype dt)
 
 void Identifier::generate(ofstream& fd) {
   fd << "PUSH " << Node::name << endl;
+  //connected ast nodes
+  Node::generate(fd);
 }
 
 Datatype Identifier::getDatatype() {

@@ -778,7 +778,7 @@ loop
 		$$.nd->insert($3.nd);
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert($5.nd);
-		$$.ASTnd = new Node("while");
+		$$.ASTnd = new While("while");
 		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd);
 	}
 	| DO stmt WHILE '(' expression ')' ';' {

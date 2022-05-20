@@ -111,6 +111,8 @@ main() {
     while(looper1 < 4){
         looper1;
         looper1+=1;
+        looper1-=9;
+        looper1-=20;
     }
     looper1 = 0;
     do{
