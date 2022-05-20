@@ -11,8 +11,8 @@
 
 #include "identifier.hh"
 
-Identifier::Identifier(string name) 
-: Node(name)
+Identifier::Identifier(string name, Datatype dt) 
+: Node(name), dt{dt}
 {
 
 }
@@ -20,4 +20,8 @@ Identifier::Identifier(string name)
 
 void Identifier::generate(ofstream& fd) {
   fd << "PUSH " << Node::name << endl;
+}
+
+Datatype Identifier::getDatatype() {
+  return dt;
 }

@@ -11,7 +11,7 @@
 
 const int a; /* uninitalized */
 const int b; /* uninitalized */
-int main() {
+int main(int a) {
   const int a; /* Shadowing + uninitalized */
   a = 3; /* assignment of read-only variable*/
   {

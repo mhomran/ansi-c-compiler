@@ -18,7 +18,8 @@
 
 /* ------------------------- Tokens Definitions ---------------------------- */
 // Variables and Constants declaration
-%token <TreeNode> IDENTIFIER CONSTANT
+%token <TreeNode> IDENTIFIER 
+%token <TreeNode> INTEGER_CONSTANT FLOATING_CONSTANT
 
 // unary operators
 %token  LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
@@ -71,15 +72,16 @@ Node* getAST();
 void insertVariable(string, Datatype, bool, bool);
 /* ------------------------------------------------------------------------- */
 %}
-
+%type <TreeNode> constant
 %type <TreeNode> function_global_var c_file
 %type <TreeNode> basic_element function_call
 %type <TreeNode> unary_operation unary_operator datatype 
 %type <TreeNode> declaration var_const function_signature
 %type <TreeNode> expression_stmt declarations
 %type <TreeNode> return parameters arguments
-%type <TreeNode> mul_div_mod add_sub shift relation equal_not_equal bitwise_and
-%type <TreeNode> xor bitwise_or and or assign_operator expression
+%type <TreeNode> mul_div_mod add_sub shift relation equal_not_equal 
+%type <TreeNode> and or assign_operator expression
+%type <TreeNode> xor bitwise_or bitwise_and
 %type <TreeNode> switch switch_body block start_block end_block loop
 %type <TreeNode> assignment stmts stmt other_stmt
 %type <TreeNode> MIF UIF 
@@ -97,11 +99,10 @@ void insertVariable(string, Datatype, bool, bool);
 /* Precedence decreases as you go down */
 basic_element
 	: IDENTIFIER { 
-		$$.nd = new Node($1.name);
-		$$.ASTnd = new Identifier($1.name);
-
     std::ostringstream buffer;
 		Symbol* sym = gSymbolTable->LookUp($1.name);
+		$$.nd = new Node($1.name);
+
 		if(NULL == sym) {
 			buffer << "[ERROR]: @ line " << line << " " << $1.name << " undefined variable." << std::endl;
 			throw buffer.str();
@@ -115,17 +116,30 @@ basic_element
 				if(!(temp->getIsInitialized())) {
 					cout << "[WARNING]: @ line " << line << " " << $1.name << " used before initialized." << std::endl;
 				}
+				$$.ASTnd = new Identifier($1.name, temp->getDatatype());
 			}
 		}
 	}
-	| CONSTANT { 
-		$$.nd = new Node($1.name); 
-		$$.ASTnd = new Constant($1.name);
+	| constant { 
+		$$.nd = new Node("constant"); 
+		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
 	}
 	| '(' expression ')' {
 		$$.nd = new Node("basic_element");
 		$$.nd->insert(new Node("("))->insert($2.nd)->insert(new Node(")"));
 		$$.ASTnd = $2.ASTnd;
+	}
+	;
+
+constant
+	: INTEGER_CONSTANT { 
+		$$.nd = new Node($1.name); 
+		$$.ASTnd = new IntConstant($1.name);
+	}
+	| FLOATING_CONSTANT { 
+		$$.nd = new Node($1.name); 
+		$$.ASTnd = new FloatConstant($1.name);
 	}
 	;
 
@@ -716,7 +730,7 @@ expression_stmt
 
 //action: if(temp == constant) {enter call body jump out of the switch }
 switch_body
-  : CASE CONSTANT ':' block BREAK ';' switch_body {
+  : CASE constant ':' block BREAK ';' switch_body {
 		$$.nd = new Node("labeled_stmt"); 
 		$$.nd->insert(new Node("case")); 
 		$$.nd->insert(new Node($2.name)); 

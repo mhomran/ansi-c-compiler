@@ -61,6 +61,11 @@ std::vector<Node *> Node::getChildren() {
 	return children;
 }
 
+std::string Node::getName() {
+	return name;
+}
+
+
 void Node::DeleteTree(Node* root)
 {
 	if (root == NULL) return;

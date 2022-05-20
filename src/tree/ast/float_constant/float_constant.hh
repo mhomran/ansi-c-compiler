@@ -1,7 +1,7 @@
 /**
- * @file identifier.hh
+ * @file float_constant.hh
  * @author Mohamed Hassanin
- * @brief AST node for identifier rule
+ * @brief AST node for float_constant rule
  * @version 0.1
  * @date 2022-05-13
  * 
@@ -12,15 +12,12 @@
 #pragma once
 
 #include "../../tree/tree.hh"
-#include "../../../common/datatype.hh"
 
 using namespace std;
 
-class Identifier : public Node {
-  Datatype dt;
+class FloatConstant : public Node {
 
   public:
-  Identifier(string, Datatype);
+  FloatConstant(string);
   virtual void generate(ofstream&);
-  Datatype getDatatype();
 };

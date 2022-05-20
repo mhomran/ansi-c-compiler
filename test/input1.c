@@ -65,22 +65,22 @@ main() {
     z=.3e1;
 
     /* Bitwise operators */
-    y |= y;
-    y = y | y;
-    y &= y;
+    y |= a1;
+    y = a1 | a2;
+    y &= a3;
     y = y & y;
     y ^= y;
     y = y ^ y;
     y = ~y;
 
     /* conditional operators */
-    y = y > y;
-    y = y < y;
-    y = y <= y;
-    y = y >= y;
-    y = y == y;
-    y = y != y;
-    y = !y;
+    z = z > z;
+    z = z < z;
+    z = z <= z;
+    z = z >= z;
+    z = z == z;
+    z = z != z;
+    z = !z;
 
     /* Arithmetic operators */
     y = y + y;
@@ -138,9 +138,9 @@ main() {
         a = 1;
     }
     
-    /* Function Calls */
+    /* Function Calls 
     yoo();
-    foo(x, y, z);
+    foo(x, y, z); */
 
     /* expressions */
     a = (a1 + a2) * a3 / a4;

@@ -108,17 +108,17 @@ void comment(void);
  /* integer Constant */
 {INTEGER_CONSTANT}    { 
 	strcpy(yylval.TreeNode.name, yytext); 
-	echo("integer_constant"); return(CONSTANT); 
+	echo("integer_constant"); return(INTEGER_CONSTANT); 
 }
  /* Floating Constant */
 {FLOATING_CONSTANT}   { 
 	strcpy(yylval.TreeNode.name, yytext); 
-	echo("floating_constant"); return(CONSTANT); 
+	echo("floating_constant"); return(FLOATING_CONSTANT); 
 }
  /* Char Constant (simplified) */
 '([a-zA-Z]|{DIGIT})'  { 
 	strcpy(yylval.TreeNode.name, yytext); 
-	echo("char"); return(CONSTANT); 
+	echo("char"); return(INTEGER_CONSTANT); 
 }			
  
  /* ------------------------------------------------------------------------- */

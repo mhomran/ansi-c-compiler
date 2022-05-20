@@ -10,11 +10,16 @@
  */
 
 #include "bitwise_and.hh"
+#include "../bitwise/bitwise.hh"
 
 BitwiseAnd::BitwiseAnd(string name) : Node(name) {
 
 }
+
 void BitwiseAnd::generate(std::ofstream& fd) {
+  // check for float numbers
+  Bitwise::checkFloat(this);
+  
   Node::generate(fd);
   fd << "BITWISE_AND" << endl;
 }

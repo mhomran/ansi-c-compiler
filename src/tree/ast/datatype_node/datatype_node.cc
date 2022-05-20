@@ -11,7 +11,7 @@
 
 #include "datatype_node.hh"
 
-DatatypeNode::DatatypeNode(string Name, Datatype Datatype) 
+DatatypeNode::DatatypeNode(string Name, Datatype datatype) 
 : Node(Name)
 , datatype{datatype} {
 

@@ -44,3 +44,7 @@ bool VarSymbol::getIsConst(void) {
 void VarSymbol::setIsConst(bool isConst) {
   this->isConst = isConst;
 }
+
+Datatype VarSymbol::getDatatype() {
+  return datatype;
+}

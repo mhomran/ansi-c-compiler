@@ -1,7 +1,7 @@
 /**
- * @file constant.hh
+ * @file int_constant.hh
  * @author Mohamed Hassanin
- * @brief AST node for constant rule
+ * @brief AST node for int_constant rule
  * @version 0.1
  * @date 2022-05-13
  * 
@@ -15,9 +15,9 @@
 
 using namespace std;
 
-class Constant : public Node {
+class IntConstant : public Node {
 
   public:
-  Constant(string);
+  IntConstant(string);
   virtual void generate(ofstream&);
 };

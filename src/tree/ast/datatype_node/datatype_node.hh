@@ -20,6 +20,6 @@ class DatatypeNode : public Node {
   Datatype datatype;
 
   public:
-  DatatypeNode(string Name, Datatype Datatype);
+  DatatypeNode(string Name, Datatype datatype);
   Datatype getDatatype(void);
 };

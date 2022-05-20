@@ -1,7 +1,7 @@
 /**
- * @file constant.cc
+ * @file int_constant.cc
  * @author Mohamed Hassanin
- * @brief AST node for constant rule
+ * @brief AST node for int_constant rule
  * @version 0.1
  * @date 2022-05-13
  * 
@@ -9,15 +9,15 @@
  * 
  */
 
-#include "constant.hh"
+#include "int_constant.hh"
 
-Constant::Constant(string name) 
+IntConstant::IntConstant(string name) 
 : Node(name)
 {
 
 }
 
 
-void Constant::generate(ofstream& fd) {
+void IntConstant::generate(ofstream& fd) {
   fd << "PUSH " << Node::name << endl;
 }

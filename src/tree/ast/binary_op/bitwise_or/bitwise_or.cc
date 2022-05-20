@@ -10,11 +10,15 @@
  */
 
 #include "bitwise_or.hh"
+#include "../bitwise/bitwise.hh"
 
 BitwiseOr::BitwiseOr(string name) : Node(name) {
 
 }
 void BitwiseOr::generate(std::ofstream& fd) {
+  // check for float numbers
+  Bitwise::checkFloat(this);
+
   Node::generate(fd);
   fd << "BITWISE_OR" << endl;
 }

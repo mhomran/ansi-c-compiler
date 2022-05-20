@@ -30,4 +30,5 @@ class VarSymbol : public Symbol {
   void setIsConst(bool);
   bool getIsInitialized(void);
   void setIsInitialized(bool);
+  Datatype getDatatype();
 };
