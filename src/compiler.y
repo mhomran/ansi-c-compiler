@@ -813,7 +813,7 @@ loop
 		$$.nd->insert($5.nd);		
 		$$.nd->insert(new Node(")"));
 		$$.nd->insert($7.nd);		
-		$$.ASTnd = new Node("for");
+		$$.ASTnd = new For("for");
 		$$.ASTnd->insert($3.ASTnd)->insert($4.ASTnd)->insert($5.ASTnd)->insert($7.ASTnd);
 	}
 	;
