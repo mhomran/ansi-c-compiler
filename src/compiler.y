@@ -621,7 +621,7 @@ MIF
     $$.nd->insert(new Node("if"))->insert(new Node("("))->insert($3.nd);
     $$.nd->insert(new Node(")"))->insert($5.nd)->insert(new Node("else"))->insert($7.nd);
 		
-    $$.ASTnd = new Node("MIF");
+    $$.ASTnd = new Mif("MIF");
 		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd)->insert($7.ASTnd);
 	}
   | other_stmt {
@@ -637,7 +637,7 @@ UIF
     $$.nd->insert(new Node("if"))->insert(new Node("("))->insert($3.nd);
     $$.nd->insert(new Node(")"))->insert($5.nd);
 		
-		$$.ASTnd = new Node("UIF");
+		$$.ASTnd = new Uif("UIF");
 		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd);
   }
   | IF '(' expression ')' MIF ELSE UIF {
@@ -645,7 +645,7 @@ UIF
     $$.nd->insert(new Node("if"))->insert(new Node("("))->insert($3.nd);
     $$.nd->insert(new Node(")"))->insert($5.nd)->insert(new Node("else"))->insert($7.nd);
 		
-		$$.ASTnd = new Node("UIF");
+		$$.ASTnd = new Mif("UIF");
 		$$.ASTnd->insert($3.ASTnd)->insert($5.ASTnd)->insert($7.ASTnd);
   }
   ;

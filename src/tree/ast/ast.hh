@@ -25,3 +25,5 @@
 #include "while/while.hh"
 #include "do_while/do_while.hh"
 #include "for/for.hh"
+#include "mif/mif.hh"
+#include "uif/uif.hh"

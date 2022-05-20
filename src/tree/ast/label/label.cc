@@ -11,9 +11,13 @@
 
 #include "label.hh"
 
-int Label::generateLabel() {
-  static int id = -1;
-  
+int Label::generateLabel() {  
   id++;
   return id;
 }
+
+int Label::getLastLabel() {
+  return id;
+}
+
+int Label::id = -1;

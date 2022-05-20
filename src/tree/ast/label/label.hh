@@ -10,6 +10,9 @@
  */
 
 class Label {
+  static int id;
+
   public:
   static int generateLabel();
+  static int getLastLabel();
 };
