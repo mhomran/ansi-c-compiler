@@ -122,14 +122,20 @@ main() {
 
     /* switch statement */
     switch(a){
-        case 0: {
+        case 123: {
+            if(a == a) a = a;
+            if(a == a) a = a;
+        }
+        break;
+
+        case 456: {
             if(a == a) a = a;
             if(a == a) a = a;
         }
         break;
 
         default: {
-            /* DO NOTHING */
+            if(a == a) a = a;
         }
         break;
     }

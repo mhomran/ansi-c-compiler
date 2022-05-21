@@ -27,3 +27,6 @@
 #include "for/for.hh"
 #include "mif/mif.hh"
 #include "uif/uif.hh"
+#include "default/default.hh"
+#include "switch/switch.hh"
+#include "case/case.hh"

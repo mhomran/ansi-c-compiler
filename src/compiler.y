@@ -72,7 +72,7 @@ Node* getAST();
 void insertVariable(string, Datatype, bool, bool);
 /* ------------------------------------------------------------------------- */
 %}
-%type <TreeNode> constant
+%type <TreeNode> constant identifier
 %type <TreeNode> function_global_var c_file
 %type <TreeNode> basic_element function_call
 %type <TreeNode> unary_operation unary_operator datatype 
@@ -97,7 +97,7 @@ void insertVariable(string, Datatype, bool, bool);
 
 
 /* Precedence decreases as you go down */
-basic_element
+identifier
 	: IDENTIFIER { 
     std::ostringstream buffer;
 		Symbol* sym = gSymbolTable->LookUp($1.name);
@@ -119,6 +119,13 @@ basic_element
 				$$.ASTnd = new Identifier($1.name, temp->getDatatype());
 			}
 		}
+	}
+	;
+basic_element
+	: identifier {
+		$$.nd = new Node("identifier"); 
+		$$.nd->insert($1.nd);
+		$$.ASTnd = $1.ASTnd;
 	}
 	| constant { 
 		$$.nd = new Node("constant"); 
@@ -439,7 +446,7 @@ assignment
 		$$.nd->insert($1.nd);
 		$$.ASTnd = $1.ASTnd;
 	}
-	| IDENTIFIER assign_operator assignment {
+	| identifier assign_operator assignment {
 		$$.nd = new Node("assignment"); 
 		$$.nd->insert($1.nd)->insert($2.nd)->insert($3.nd);
 		$$.ASTnd = new Assignment("assignment", $1.name); 
@@ -614,7 +621,6 @@ other_stmt
 	| loop { $$.nd = new Node("stmt"); $$.nd->insert($1.nd); $$.ASTnd = $1.ASTnd; }
   ;
 
-//action: jump based on the expression
 MIF 
   : IF '(' expression ')' MIF ELSE MIF {
     $$.nd = new Node("MIF");
@@ -728,7 +734,9 @@ expression_stmt
 	}
 	;
 
-//action: if(temp == constant) {enter call body jump out of the switch }
+
+
+
 switch_body
   : CASE constant ':' block BREAK ';' switch_body {
 		$$.nd = new Node("labeled_stmt"); 
@@ -739,8 +747,8 @@ switch_body
 		$$.nd->insert(new Node("break")); 
 		$$.nd->insert(new Node(";")); 
 		$$.nd->insert($7.nd);
-		$$.ASTnd = new Node("case");
-		$$.ASTnd->insert($4.ASTnd)->insert($7.ASTnd);
+		$$.ASTnd = new Case("case");
+		$$.ASTnd->insert($2.ASTnd)->insert($4.ASTnd)->insert($7.ASTnd);
 	}
 	| DEFAULT ':' block BREAK ';' {
 		$$.nd = new Node("labeled_stmt"); 
@@ -749,14 +757,12 @@ switch_body
 		$$.nd->insert($3.nd); 
 		$$.nd->insert(new Node("break")); 
 		$$.nd->insert(new Node(";")); 
-		$$.ASTnd = new Node("default");
+		$$.ASTnd = new Default("default");
 		$$.ASTnd->insert($3.ASTnd);
 	}
 
-//action: read identifier and store it in a temp, call switch body
-//ref: https://fog.ccsf.edu/~gboyd/cs270/online/mipsII/switch.html
 switch
-	: SWITCH '(' IDENTIFIER ')' start_block switch_body end_block {
+	: SWITCH '(' identifier ')' start_block switch_body end_block {
 		$$.nd = new Node("switch"); 
 		$$.nd->insert(new Node("("));
 		$$.nd->insert(new Node($3.name));
@@ -764,12 +770,11 @@ switch
 		$$.nd->insert(new Node("{"));
 		$$.nd->insert($6.nd);
 		$$.nd->insert(new Node("}"));
-		$$.ASTnd = new Node("switch");
-		$$.ASTnd->insert($6.ASTnd);
+		$$.ASTnd = new Switch("switch");
+		$$.ASTnd->insert($3.ASTnd)->insert($6.ASTnd);
 	}
 	;
 
-//action: Add a label, call body, end with a goto under the expression
 loop
 	: WHILE '(' expression ')' block {
 		$$.nd = new Node("loop"); 
