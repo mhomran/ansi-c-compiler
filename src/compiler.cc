@@ -17,6 +17,7 @@
 /* ------------------------- Functions prototypes -------------------------- */
 int yyparse (void);
 void yydtor (void);
+void yyctor (void);
 Node* getParseTree ();
 Node* getAST ();
 /* ------------------------------------------------------------------------- */
@@ -27,6 +28,8 @@ main(void)
 {
   bool ParseError;
   int ret;
+  
+  yyctor();
   
   try {
     std::cout << "[INFO]: Start Parsing ..." << std::endl;

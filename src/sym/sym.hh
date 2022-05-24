@@ -22,7 +22,7 @@ class Symbol {
   public:
   Symbol(string name, int scope, int line);
   virtual ~Symbol();
-  virtual void print();
+  virtual void print(ofstream&fd);
   int getScope();
   int getLine(void);
 };

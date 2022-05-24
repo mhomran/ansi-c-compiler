@@ -10,7 +10,9 @@
  * 
  */
 
+#include <fstream>
 #include "var_sym.hh"
+using namespace std;
 
 VarSymbol::VarSymbol(string name, int scope, int line,
  Datatype datatype, bool isConst, bool isInitialized) 
@@ -47,4 +49,12 @@ void VarSymbol::setIsConst(bool isConst) {
 
 Datatype VarSymbol::getDatatype() {
   return datatype;
+}
+
+void VarSymbol::print(ofstream&fd) {
+  Symbol::print(fd);
+  fd <<
+  "<td>" << "var" << "</td>\n"
+  "</tr>\n"
+  ;
 }

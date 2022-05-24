@@ -20,7 +20,7 @@ void
 Uif::generate(std::ofstream& fd) {
   auto children = Node::getChildren();
   int lbl2 = Label::generateLabel();
-  int i;
+  size_t i;
 
   children[0]->generate(fd); //expression
   fd << "JMPF " << "L" << lbl2 << endl;

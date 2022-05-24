@@ -10,6 +10,8 @@
  */
 
 #include <iostream>
+#include <string>
+#include <fstream>
 #include "sym.hh"
 using namespace std;
 
@@ -20,7 +22,7 @@ Symbol::Symbol(string name, int scope, int line)
 
 }
 
-int Symbol::getScope() {
+int Symbol::getScope(void) {
   return scope;
 }
 
@@ -28,8 +30,13 @@ Symbol::~Symbol() {
 
 }
 
-void Symbol::print() {
-  cout << name << endl;
+void Symbol::print(ofstream&fd) {
+  fd << 
+  "<tr>" <<
+    "<td>" << name << "</td>\n"
+    "<td>" << scope << "</td>\n"
+    "<td>" << line << "</td>\n"
+  ;
 }
 
 int Symbol::getLine(void) {

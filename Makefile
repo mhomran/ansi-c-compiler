@@ -69,3 +69,23 @@ else
 	cd $(BUILD_DIR); ./${TARGET}.exe < ../${TEST}/$(INPUT)
 	cd $(BUILD_DIR); dot -Tpng -O parse_tree.dot
 endif
+
+.PHONY: show_sym
+show_sym:
+ifndef INPUT
+	@echo Please specify the name of the test file
+else
+	cd $(BUILD_DIR); ./${TARGET}.exe < ../${TEST}/$(INPUT)
+	cd $(BUILD_DIR); dot -Tpng -O symtable.dot
+endif
+
+.PHONY: show_all
+show_all:
+ifndef INPUT
+	@echo Please specify the name of the test file
+else
+	cd $(BUILD_DIR); ./${TARGET}.exe < ../${TEST}/$(INPUT)
+	cd $(BUILD_DIR); dot -Tpng -O parse_tree.dot
+	cd $(BUILD_DIR); dot -Tpng -O AST.dot
+	cd $(BUILD_DIR); dot -Tpng -O symtable.dot
+endif

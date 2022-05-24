@@ -55,6 +55,8 @@
 static Node* gParseTree;
 static Node* gAST;
 static SymbolTable* gSymbolTable = new SymbolTable();
+static	std::ofstream st_fd;
+
 /* ------------------------------------------------------------------------- */
 
 /* ----------------------- extern global variables ------------------------- */
@@ -66,6 +68,7 @@ extern int line;
 int yylex(void);
 void yyerror (char const *s);
 void yydtor (void);
+void yyctor (void);
 
 Node* getParseTree ();
 Node* getAST();
@@ -910,6 +913,39 @@ yydtor () {
 	delete gSymbolTable;
 	Node::DeleteTree(gParseTree);
 	Node::DeleteTree(gAST);
+
+	st_fd << 
+	" </table>\n"
+  "> ]\n"
+	"}\n"
+	;
+
+	st_fd.close();
+	std::cout << "[INFO]: Finish Writing symtable.dot file." << std::endl;
+
+}
+
+/**
+* Constructor function for parser.
+*/
+void 
+yyctor (void) {
+	std::cout << "[INFO]: Start Writing symtable.dot file..." << std::endl;
+	
+	st_fd.open("symtable.dot");
+	st_fd << 
+	"digraph {\n"
+  "node [ shape=none fontname=Helvetica ]\n"
+
+  "n [ label = <\n"
+    "<table>\n"
+		"<tr>\n"
+			"<td bgcolor='#ffcccc'>name</td>\n"
+			"<td bgcolor='#ffcccc'>scope</td>\n"
+			"<td bgcolor='#ffcccc'>line</td>\n"
+			"<td bgcolor='#ffcccc'>type</td>\n"
+		"</tr>\n"
+	;
 }
 
 Node* getParseTree ()
@@ -936,6 +972,7 @@ insertVariable(string name, Datatype dt, bool isConst, bool isInitialized)
 	else {
 		sym = new VarSymbol(name, gSymbolTable->getLevel(), line, dt, isConst, isInitialized);
 		gSymbolTable->insert(name, sym);
+		sym->print(st_fd);
 	}
 }
 /* ------------------------------------------------------------------------- */

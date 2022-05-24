@@ -31,4 +31,5 @@ class VarSymbol : public Symbol {
   bool getIsInitialized(void);
   void setIsInitialized(bool);
   Datatype getDatatype();
+  virtual void print(ofstream&fd);
 };
