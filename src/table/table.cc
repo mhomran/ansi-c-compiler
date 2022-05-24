@@ -26,7 +26,7 @@ SymbolTable::SymbolTable(SymbolTable* prev)
 }
 
 SymbolTable::~SymbolTable() {
-  currLevel++;
+  currLevel--;
   for(auto symbol : symbols) {
     Symbol* sym = symbol.second;
     string symName = symbol.first;
