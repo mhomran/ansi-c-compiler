@@ -8,6 +8,7 @@ A simplified compiler for C language 89 which is known as ANSI C.
 1. Install GNU `gcc` compiler.
 1. Install GNU `Make`
 1. (Optional) Install `Graphviz` in case you want to generate the parse tree images.
+1. (Optional) For the GUI install `python 3`, then install `pyqt5` and `pyqt5-tools` using pip.
 1. run `make`
 
 # How to run testcases
