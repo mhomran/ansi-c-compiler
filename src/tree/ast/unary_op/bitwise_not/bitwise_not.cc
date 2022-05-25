@@ -10,11 +10,21 @@
  */
 
 #include "bitwise_not.hh"
+#include "../temp/temp.hh"
 
 BitwiseNot::BitwiseNot(string name) : Node(name) {
 
 }
 void BitwiseNot::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  string arg1;
+  string out;
+
   Node::generate(fd, stack);
-  fd << "BITWISE_NOT" << endl;
+  fd << "BITWISE_NOT";
+
+  if(!stack.empty()) { arg1 = stack.back(); stack.pop_back(); }
+  out = Temp::generateTemp();
+  stack.push_back(out);
+
+  fd << " " << arg1 << " " << out << endl;
 }

@@ -10,7 +10,7 @@
  */
 
 #include "binary_op.hh"
-#include "temp/temp.hh"
+#include "../temp/temp.hh"
 
 BinaryOp::BinaryOp(string name) : Node(name) {
 
