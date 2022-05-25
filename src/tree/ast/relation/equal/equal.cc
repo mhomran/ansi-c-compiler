@@ -12,7 +12,7 @@
 #include "equal.hh"
 
 Equal::Equal(string name) 
-: Node(name)
+: BinaryOp(name)
 {
 
 }
@@ -20,5 +20,6 @@ Equal::Equal(string name)
 
 void Equal::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   Node::generate(fd, stack);
-  fd << "EQ " << endl;
+  fd << "EQ";
+  BinaryOp::generate(fd, stack);
 }

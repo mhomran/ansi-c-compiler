@@ -12,7 +12,7 @@
 #include "greater.hh"
 
 Greater::Greater(string name) 
-: Node(name)
+: BinaryOp(name)
 {
 
 }
@@ -20,5 +20,6 @@ Greater::Greater(string name)
 
 void Greater::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   Node::generate(fd, stack);
-  fd << "GR " << endl;
+  fd << "GR";
+  BinaryOp::generate(fd, stack);
 }

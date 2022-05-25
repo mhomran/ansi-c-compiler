@@ -12,7 +12,7 @@
 #include "not_equal.hh"
 
 NotEqual::NotEqual(string name) 
-: Node(name)
+: BinaryOp(name)
 {
 
 }
@@ -20,5 +20,6 @@ NotEqual::NotEqual(string name)
 
 void NotEqual::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   Node::generate(fd, stack);
-  fd << "NEQ " << endl;
+  fd << "NEQ";
+  BinaryOp::generate(fd, stack);
 }

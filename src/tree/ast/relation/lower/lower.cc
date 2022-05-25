@@ -12,7 +12,7 @@
 #include "lower.hh"
 
 Lower::Lower(string name) 
-: Node(name)
+: BinaryOp(name)
 {
 
 }
@@ -20,5 +20,6 @@ Lower::Lower(string name)
 
 void Lower::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   Node::generate(fd, stack);
-  fd << "LR " << endl;
+  fd << "LR";
+  BinaryOp::generate(fd, stack);
 }

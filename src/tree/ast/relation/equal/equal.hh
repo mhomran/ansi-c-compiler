@@ -11,11 +11,11 @@
 
 #pragma once
 
-#include "../../../tree/tree.hh"
+#include "../../binary_op/binary_op.hh"
 
 using namespace std;
 
-class Equal : public Node {
+class Equal : public BinaryOp {
 
   public:
   Equal(string);

@@ -12,7 +12,7 @@
 #include "greater_equal.hh"
 
 GreaterEqual::GreaterEqual(string name) 
-: Node(name)
+: BinaryOp(name)
 {
 
 }
@@ -20,5 +20,6 @@ GreaterEqual::GreaterEqual(string name)
 
 void GreaterEqual::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   Node::generate(fd, stack);
-  fd << "GRE " << endl;
+  fd << "GRE";
+  BinaryOp::generate(fd, stack);
 }

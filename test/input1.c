@@ -74,13 +74,14 @@ main() {
     y = ~y;
 
     /* conditional operators */
-    z = z > z;
+    z = z > y;
     z = z < z;
     z = z <= z;
     z = z >= z;
     z = z == z;
     z = z != z;
     z = !z;
+    z = (a1 < a2) && (a3 == a4);
 
     /* Arithmetic operators */
     y = z + y;

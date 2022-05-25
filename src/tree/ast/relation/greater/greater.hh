@@ -11,11 +11,11 @@
 
 #pragma once
 
-#include "../../../tree/tree.hh"
+#include "../../binary_op/binary_op.hh"
 
 using namespace std;
 
-class Greater : public Node {
+class Greater : public BinaryOp {
 
   public:
   Greater(string);

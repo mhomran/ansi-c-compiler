@@ -12,7 +12,7 @@
 #include "lower_equal.hh"
 
 LowerEqual::LowerEqual(string name) 
-: Node(name)
+: BinaryOp(name)
 {
 
 }
@@ -20,5 +20,6 @@ LowerEqual::LowerEqual(string name)
 
 void LowerEqual::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   Node::generate(fd, stack);
-  fd << "LRE " << endl;
+  fd << "LRE";
+  BinaryOp::generate(fd, stack);
 }
