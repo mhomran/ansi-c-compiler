@@ -11,10 +11,11 @@
 
 #include "div.hh"
 
-Div::Div(string name) : Node(name) {
+Div::Div(string name) : BinaryOp(name) {
 
 }
-void Div::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "DIV" << endl;
+void Div::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+  fd << "DIV";
+  BinaryOp::generate(fd, stack);
 }

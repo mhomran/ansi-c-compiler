@@ -14,5 +14,4 @@ class Label {
 
   public:
   static int generateLabel();
-  static int getLastLabel();
 };

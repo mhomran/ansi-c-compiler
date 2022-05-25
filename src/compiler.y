@@ -965,7 +965,7 @@ insertVariable(string name, Datatype dt, bool isConst, bool isInitialized)
 	// Lookup the symbol table, if exist return symantic error (redefinition)
 	Symbol* sym = gSymbolTable->LookUp(name);
 	if(NULL != sym && sym->getScope() == gSymbolTable->getLevel()) {
-		buffer << "[ERROR]: @ line " << line << " " << name << "redefinition" << std::endl;
+		buffer << "[ERROR]: @ line " << line << " " << name << " redefinition" << std::endl;
 		throw buffer.str();
 	} 
 	// otherwise, add it to the symbol table

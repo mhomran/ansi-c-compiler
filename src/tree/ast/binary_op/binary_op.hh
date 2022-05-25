@@ -1,9 +1,9 @@
 /**
  * @file binary_op.hh
- * @author Mohamed Hassanin Mohamed
- * @brief Binary operation nodes
+ * @author Mohamed Hassanin
+ * @brief AST node for binary_op rules
  * @version 0.1
- * @date 2022-05-14
+ * @date 2022-05-13
  * 
  * @copyright Copyright (c) 2022
  * 
@@ -11,19 +11,12 @@
 
 #pragma once
 
-#include "add/add.hh"
-#include "sub/sub.hh"
-#include "mul/mul.hh"
-#include "div/div.hh"
-#include "mod/mod.hh"
+#include "../../tree/tree.hh"
 
-#include "and/and.hh"
-#include "or/or.hh"
-#include "not/not.hh"
+using namespace std;
 
-#include "bitwise_and/bitwise_and.hh"
-#include "bitwise_not/bitwise_not.hh"
-#include "bitwise_or/bitwise_or.hh"
-#include "bitwise_xor/bitwise_xor.hh"
-#include "shift_left/shift_left.hh"
-#include "shift_right/shift_right.hh"
+class BinaryOp : public Node {
+  public:
+  BinaryOp(string name);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
+};

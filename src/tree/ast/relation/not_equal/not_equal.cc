@@ -18,7 +18,7 @@ NotEqual::NotEqual(string name)
 }
 
 
-void NotEqual::generate(ofstream& fd) {
-  Node::generate(fd);
+void NotEqual::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
   fd << "NEQ " << endl;
 }

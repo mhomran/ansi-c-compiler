@@ -17,17 +17,17 @@ Uif::Uif(string name) : Node(name) {
 }
 
 void 
-Uif::generate(std::ofstream& fd) {
+Uif::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   auto children = Node::getChildren();
   int lbl2 = Label::generateLabel();
   size_t i;
 
-  children[0]->generate(fd); //expression
+  children[0]->generate(fd, stack); //expression
   fd << "JMPF " << "L" << lbl2 << endl;
-  children[1]->generate(fd); //if body
+  children[1]->generate(fd, stack); //if body
   fd << "L" << lbl2 << ":" << endl;
 
   for(i = 2; i < children.size(); i++) {
-    children[i]->generate(fd);
+    children[i]->generate(fd, stack);
   }
 }

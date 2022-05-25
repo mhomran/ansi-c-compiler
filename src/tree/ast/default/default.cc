@@ -19,6 +19,6 @@ Default::Default(string name) : Node(name) {
 }
 
 void 
-Default::generate(std::ofstream& fd) {
-  Node::generate(fd);
+Default::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
 }

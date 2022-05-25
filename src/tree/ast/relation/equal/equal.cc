@@ -18,7 +18,7 @@ Equal::Equal(string name)
 }
 
 
-void Equal::generate(ofstream& fd) {
-  Node::generate(fd);
+void Equal::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
   fd << "EQ " << endl;
 }

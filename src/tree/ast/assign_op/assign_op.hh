@@ -18,5 +18,5 @@ using namespace std;
 class AssignOp : public Node {
   public:
   AssignOp(string name);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

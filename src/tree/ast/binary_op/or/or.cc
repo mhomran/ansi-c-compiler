@@ -11,10 +11,11 @@
 
 #include "or.hh"
 
-Or::Or(string name) : Node(name) {
+Or::Or(string name) : BinaryOp(name) {
 
 }
-void Or::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "OR" << endl;
+void Or::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+  fd << "OR";
+  BinaryOp::generate(fd, stack);
 }

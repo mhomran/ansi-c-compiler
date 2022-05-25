@@ -11,10 +11,11 @@
 
 #include "shift_right.hh"
 
-ShiftRight::ShiftRight(string name) : Node(name) {
+ShiftRight::ShiftRight(string name) : BinaryOp(name) {
 
 }
-void ShiftRight::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "SHIFT_RIGHT" << endl;
+void ShiftRight::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+  fd << "SHIFT_RIGHT";
+  BinaryOp::generate(fd, stack);
 }

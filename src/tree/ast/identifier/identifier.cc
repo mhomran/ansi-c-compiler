@@ -18,10 +18,10 @@ Identifier::Identifier(string name, Datatype dt)
 }
 
 
-void Identifier::generate(ofstream& fd) {
-  fd << "PUSH " << Node::name << endl;
+void Identifier::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  stack.push_back(Node::name);
   //connected ast nodes
-  Node::generate(fd);
+  Node::generate(fd, stack);
 }
 
 Datatype Identifier::getDatatype() {

@@ -19,5 +19,5 @@ using namespace std;
 class For : public Node {
   public:
     For(string name);
-    virtual void generate(std::ofstream&);
+    virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

@@ -20,14 +20,14 @@ While::While(string name)
 }
 
 void 
-While::generate(std::ofstream& fd) {
+While::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   int lbl1 = Label::generateLabel();
   int lbl2 = Label::generateLabel();
   fd << "L" << lbl1 << ":" << endl;
   auto children = Node::getChildren();
-  children[0]->generate(fd); //expression
+  children[0]->generate(fd, stack); //expression
   fd << "JMPF " << "L" << lbl2 << endl;
-  children[1]->generate(fd); //body
+  children[1]->generate(fd, stack); //body
   fd << "JMP " << "L" << lbl1 << endl; //back to the expression
   fd << "L" << lbl2 << ":" << endl;
 }

@@ -93,9 +93,9 @@ Node::~Node() {
 	
 }
 
-void Node::generate(std::ofstream& fd) {
+void Node::generate(std::ofstream& fd, std::vector<std::string>& stack) {
 	for (size_t i=0; i < children.size(); i++){
-		if(NULL != children[i]) children[i]->generate(fd);
+		if(NULL != children[i]) children[i]->generate(fd, stack);
 	}
 }
 

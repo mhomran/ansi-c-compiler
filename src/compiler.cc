@@ -10,6 +10,8 @@
  */
 
 /* ------------------------------- includes -------------------------------- */
+#include <vector>
+#include <string>
 #include <iostream>
 #include "tree/tree.hh"
 /* ------------------------------------------------------------------------- */
@@ -55,7 +57,8 @@ main(void)
       std::cout << "[INFO]: Start Writing output.txt file..." << std::endl;
       std::ofstream fd;
       fd.open ("output.txt");
-      AST->generate(fd);
+      std::vector<std::string> stack;
+      AST->generate(fd, stack);
       fd.close();
       std::cout << "[INFO]: Finish Writing output.txt file." << std::endl;
     }

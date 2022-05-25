@@ -22,5 +22,5 @@ class Declaration : public Node {
 
   public:
   Declaration(string, VarConst*, string, bool isAssigned = false);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

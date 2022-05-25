@@ -12,14 +12,15 @@
 #include "bitwise_and.hh"
 #include "../bitwise/bitwise.hh"
 
-BitwiseAnd::BitwiseAnd(string name) : Node(name) {
+BitwiseAnd::BitwiseAnd(string name) : BinaryOp(name) {
 
 }
 
-void BitwiseAnd::generate(std::ofstream& fd) {
+void BitwiseAnd::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   // check for float numbers
   Bitwise::checkFloat(this);
   
-  Node::generate(fd);
-  fd << "BITWISE_AND" << endl;
+  Node::generate(fd, stack);
+  fd << "BITWISE_AND";
+  BinaryOp::generate(fd, stack);
 }

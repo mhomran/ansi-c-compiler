@@ -19,6 +19,6 @@ Switch::Switch(string name) : Node(name) {
 }
 
 void 
-Switch::generate(std::ofstream& fd) {
-  Node::generate(fd);
+Switch::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
 }

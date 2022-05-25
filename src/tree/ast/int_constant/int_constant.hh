@@ -19,5 +19,5 @@ class IntConstant : public Node {
 
   public:
   IntConstant(string);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

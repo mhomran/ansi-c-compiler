@@ -18,7 +18,7 @@ LowerEqual::LowerEqual(string name)
 }
 
 
-void LowerEqual::generate(ofstream& fd) {
-  Node::generate(fd);
+void LowerEqual::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
   fd << "LRE " << endl;
 }

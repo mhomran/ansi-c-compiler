@@ -18,6 +18,6 @@ IntConstant::IntConstant(string name)
 }
 
 
-void IntConstant::generate(ofstream& fd) {
-  fd << "PUSH " << Node::name << endl;
+void IntConstant::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  stack.push_back(Node::name);
 }

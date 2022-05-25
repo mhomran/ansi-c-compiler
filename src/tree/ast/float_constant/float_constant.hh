@@ -19,5 +19,5 @@ class FloatConstant : public Node {
 
   public:
   FloatConstant(string);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

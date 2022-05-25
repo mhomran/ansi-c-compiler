@@ -18,7 +18,7 @@ Greater::Greater(string name)
 }
 
 
-void Greater::generate(ofstream& fd) {
-  Node::generate(fd);
+void Greater::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
   fd << "GR " << endl;
 }

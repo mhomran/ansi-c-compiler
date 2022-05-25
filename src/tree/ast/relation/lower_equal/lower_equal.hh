@@ -19,5 +19,5 @@ class LowerEqual : public Node {
 
   public:
   LowerEqual(string);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

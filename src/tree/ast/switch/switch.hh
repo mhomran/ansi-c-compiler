@@ -18,5 +18,5 @@ using namespace std;
 class Switch : public Node {
   public:
   Switch(string name);
-  virtual void generate(std::ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

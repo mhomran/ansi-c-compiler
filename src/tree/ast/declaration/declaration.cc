@@ -21,15 +21,17 @@ isAssigned{isAssigned}
 
 }
 
-void Declaration::generate(ofstream& fd) {
+void Declaration::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  string loaded;
   fd << ".WORD " << identifier << endl;
   if(isAssigned) {
-    Node::children[0]->generate(fd);
-    fd << "POP " << identifier << endl;
+    Node::children[0]->generate(fd, stack);
+    if(!stack.empty()) { loaded = stack.back(); stack.pop_back(); }
+    fd << "LD " << loaded << " " << identifier << endl;
     for (size_t i=1; i < Node::children.size(); i++){
-      if(NULL != children[i]) Node::children[i]->generate(fd);
+      if(NULL != children[i]) Node::children[i]->generate(fd, stack);
     }
   } else {
-    Node::generate(fd);
+    Node::generate(fd, stack);
   }
 }

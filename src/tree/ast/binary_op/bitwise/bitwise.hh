@@ -11,11 +11,11 @@
 
 #pragma once
 
-#include "../../tree/tree.hh"
+#include "../binary_op.hh"
 
 using namespace std;
 
-class Bitwise : public Node {
+class Bitwise : public BinaryOp {
   public:
   static void checkFloat(Node* root);
 };

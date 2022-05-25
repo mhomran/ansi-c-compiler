@@ -19,15 +19,15 @@ Case::Case(string name) : Node(name) {
 }
 
 void 
-Case::generate(std::ofstream& fd) {
+Case::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   auto children = Node::getChildren();
   int lb2 = Label::generateLabel();
 
-  children[0]->generate(fd); //Constant
+  children[0]->generate(fd, stack); //Constant
   fd << "EQ" << endl;
   fd << "JMPF L" << lb2 << endl;
-  children[1]->generate(fd); //body
+  children[1]->generate(fd, stack); //body
   fd << "L" << lb2 << ":" << endl; //L:
   
-  children[2]->generate(fd); //case/default
+  children[2]->generate(fd, stack); //case/default
 }

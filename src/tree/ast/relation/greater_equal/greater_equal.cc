@@ -18,7 +18,7 @@ GreaterEqual::GreaterEqual(string name)
 }
 
 
-void GreaterEqual::generate(ofstream& fd) {
-  Node::generate(fd);
+void GreaterEqual::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
   fd << "GRE " << endl;
 }

@@ -31,7 +31,7 @@ class Node
 		Node* insert(Node* node);
 		std::vector<Node *> getChildren();
 		std::string getName();
-		virtual void generate(std::ofstream&);
+		virtual void generate(std::ofstream&, std::vector<std::string>&);
 
 		static void PrintParseTree(Node * root, std::string fname);
 		static void DeleteTree(Node* node);

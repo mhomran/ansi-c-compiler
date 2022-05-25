@@ -16,8 +16,5 @@ int Label::generateLabel() {
   return id;
 }
 
-int Label::getLastLabel() {
-  return id;
-}
 
 int Label::id = -1;

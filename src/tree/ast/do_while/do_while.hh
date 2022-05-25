@@ -19,5 +19,5 @@ using namespace std;
 class DoWhile : public Node {
   public:
     DoWhile(string name);
-    virtual void generate(std::ofstream&);
+    virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

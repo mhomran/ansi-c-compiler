@@ -11,10 +11,11 @@
 
 #include "mod.hh"
 
-Mod::Mod(string name) : Node(name) {
+Mod::Mod(string name) : BinaryOp(name) {
 
 }
-void Mod::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "MOD" << endl;
+void Mod::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+  fd << "MOD";
+  BinaryOp::generate(fd, stack);
 }

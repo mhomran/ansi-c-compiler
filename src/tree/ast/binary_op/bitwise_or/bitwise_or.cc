@@ -12,13 +12,14 @@
 #include "bitwise_or.hh"
 #include "../bitwise/bitwise.hh"
 
-BitwiseOr::BitwiseOr(string name) : Node(name) {
+BitwiseOr::BitwiseOr(string name) : BinaryOp(name) {
 
 }
-void BitwiseOr::generate(std::ofstream& fd) {
+void BitwiseOr::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   // check for float numbers
   Bitwise::checkFloat(this);
 
-  Node::generate(fd);
-  fd << "BITWISE_OR" << endl;
+  Node::generate(fd, stack);
+  fd << "BITWISE_OR";
+  BinaryOp::generate(fd, stack);
 }

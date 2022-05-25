@@ -11,12 +11,12 @@
 
 #pragma once
 
-#include "../../tree/tree.hh"
+#include "../binary_op.hh"
 
 using namespace std;
 
-class Mul : public Node {
+class Mul : public BinaryOp {
   public:
   Mul(string name);
-  virtual void generate(std::ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

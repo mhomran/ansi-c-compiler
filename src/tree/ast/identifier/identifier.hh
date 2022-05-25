@@ -21,6 +21,6 @@ class Identifier : public Node {
 
   public:
   Identifier(string, Datatype);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
   Datatype getDatatype();
 };

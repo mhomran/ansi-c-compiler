@@ -18,6 +18,6 @@ FloatConstant::FloatConstant(string name)
 }
 
 
-void FloatConstant::generate(ofstream& fd) {
-  fd << "PUSH " << Node::name << endl;
+void FloatConstant::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  stack.push_back(Node::name);
 }

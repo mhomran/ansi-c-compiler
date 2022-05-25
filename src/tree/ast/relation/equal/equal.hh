@@ -19,5 +19,5 @@ class Equal : public Node {
 
   public:
   Equal(string);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

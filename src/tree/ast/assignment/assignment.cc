@@ -18,17 +18,20 @@ Assignment::Assignment(string name, string identifier)
   
 }
 
-void Assignment::generate(ofstream& fd) {
+void Assignment::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   size_t i = 0;
-  Node::children[i]->generate(fd);
+  string loaded;
+
+  Node::children[i]->generate(fd, stack);
   i++;
   if(NULL == dynamic_cast<AssignOp*>(children[i])) {
-    fd << "PUSH " << identifier << endl;
-    Node::children[i]->generate(fd);
+    stack.push_back(identifier);
+    Node::children[i]->generate(fd, stack);
     i++;
   }
-  fd << "POP " << identifier << endl;
+  if(!stack.empty()) { loaded = stack.back(); stack.pop_back(); }
+  fd << "LD " << loaded << " " << identifier << endl;
   for (; i < Node::children.size(); i++){
-    if(NULL != children[i]) Node::children[i]->generate(fd);
+    if(NULL != children[i]) Node::children[i]->generate(fd, stack);
   }
 }

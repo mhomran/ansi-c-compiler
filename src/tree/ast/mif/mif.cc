@@ -17,15 +17,15 @@ Mif::Mif(string name) : Node(name) {
 }
 
 void 
-Mif::generate(std::ofstream& fd) {
+Mif::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   auto children = Node::getChildren();
   int lbl1 = Label::generateLabel();
   int lbl2 = Label::generateLabel();
-  children[0]->generate(fd); //expression
+  children[0]->generate(fd, stack); //expression
   fd << "JMPF " << "L" << lbl2 << endl;
-  children[1]->generate(fd); //if body
+  children[1]->generate(fd, stack); //if body
   fd << "JMP " << "L" << lbl1 << endl; //end of else
   fd << "L" << lbl2 << ":" << endl;
-  children[2]->generate(fd); //else body
+  children[2]->generate(fd, stack); //else body
   fd << "L" << lbl1 << ":" << endl;
 }

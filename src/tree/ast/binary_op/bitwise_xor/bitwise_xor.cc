@@ -12,16 +12,17 @@
 #include "bitwise_xor.hh"
 #include "../bitwise/bitwise.hh"
 
-BitwiseXor::BitwiseXor(string name) : Node(name) {
+BitwiseXor::BitwiseXor(string name) : BinaryOp(name) {
 
 }
 
 
 void 
-BitwiseXor::generate(std::ofstream& fd) {
+BitwiseXor::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   // check for float numbers
   Bitwise::checkFloat(this);
 
-  Node::generate(fd);
-  fd << "BITWISE_XOR" << endl;
+  Node::generate(fd, stack);
+  fd << "BITWISE_XOR";
+  BinaryOp::generate(fd, stack);
 }

@@ -14,7 +14,7 @@
 BitwiseNot::BitwiseNot(string name) : Node(name) {
 
 }
-void BitwiseNot::generate(std::ofstream& fd) {
-  Node::generate(fd);
+void BitwiseNot::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
   fd << "BITWISE_NOT" << endl;
 }

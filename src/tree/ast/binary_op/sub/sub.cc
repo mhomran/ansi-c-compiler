@@ -11,10 +11,11 @@
 
 #include "sub.hh"
 
-Sub::Sub(string name) : Node(name) {
+Sub::Sub(string name) : BinaryOp(name) {
 
 }
-void Sub::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "SUB" << endl;
+void Sub::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+  fd << "SUB";
+  BinaryOp::generate(fd, stack);
 }

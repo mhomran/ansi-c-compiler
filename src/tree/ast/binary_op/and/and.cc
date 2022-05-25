@@ -11,10 +11,11 @@
 
 #include "and.hh"
 
-And::And(string name) : Node(name) {
+And::And(string name) : BinaryOp(name) {
 
 }
-void And::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "AND" << endl;
+void And::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+  fd << "AND";
+  BinaryOp::generate(fd, stack);
 }

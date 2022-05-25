@@ -10,11 +10,15 @@
  */
 
 #include "add.hh"
+#include "../temp/temp.hh"
 
-Add::Add(string name) : Node(name) {
+Add::Add(string name) : BinaryOp(name) {
 
 }
-void Add::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "ADD" << endl;
+void Add::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+
+  fd << "ADD";
+
+  BinaryOp::generate(fd, stack);
 }

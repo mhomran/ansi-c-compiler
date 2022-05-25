@@ -19,5 +19,5 @@ class Greater : public Node {
 
   public:
   Greater(string);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

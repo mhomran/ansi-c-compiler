@@ -11,10 +11,11 @@
 
 #include "mul.hh"
 
-Mul::Mul(string name) : Node(name) {
+Mul::Mul(string name) : BinaryOp(name) {
 
 }
-void Mul::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "MUL" << endl;
+void Mul::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+  fd << "MUL";
+  BinaryOp::generate(fd, stack);
 }

@@ -14,7 +14,7 @@
 Not::Not(string name) : Node(name) {
 
 }
-void Not::generate(std::ofstream& fd) {
-  Node::generate(fd);
+void Not::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
   fd << "NOT" << endl;
 }

@@ -18,5 +18,5 @@ using namespace std;
 class Uif : public Node {
   public:
     Uif(string name);
-    virtual void generate(std::ofstream&);
+    virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

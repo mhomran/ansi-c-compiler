@@ -19,5 +19,5 @@ class Lower : public Node {
 
   public:
   Lower(string);
-  virtual void generate(ofstream&);
+  virtual void generate(std::ofstream&, std::vector<std::string>&);
 };

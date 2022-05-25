@@ -15,6 +15,6 @@ AssignOp::AssignOp(string name) : Node(name) {
   
 }
 
-void AssignOp::generate(ofstream& fd) {
+void AssignOp::generate(std::ofstream& fd, std::vector<std::string>& stack) {
 
 }

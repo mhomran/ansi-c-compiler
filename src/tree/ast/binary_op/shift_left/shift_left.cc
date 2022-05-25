@@ -11,10 +11,11 @@
 
 #include "shift_left.hh"
 
-ShiftLeft::ShiftLeft(string name) : Node(name) {
+ShiftLeft::ShiftLeft(string name) : BinaryOp(name) {
 
 }
-void ShiftLeft::generate(std::ofstream& fd) {
-  Node::generate(fd);
-  fd << "SHIFT_LEFT" << endl;
+void ShiftLeft::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
+  fd << "SHIFT_LEFT";
+  BinaryOp::generate(fd, stack);
 }

@@ -18,7 +18,7 @@ Lower::Lower(string name)
 }
 
 
-void Lower::generate(ofstream& fd) {
-  Node::generate(fd);
+void Lower::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  Node::generate(fd, stack);
   fd << "LR " << endl;
 }
