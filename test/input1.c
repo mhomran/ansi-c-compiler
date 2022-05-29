@@ -1,7 +1,8 @@
 /**
  * @file input1.c
  * @author Mohamed Hassanin
- * @brief This is a test file to test my ANSI C parser and lexer.
+ * @brief This is a test file for most of the recognized syntax
+ * without any warnings and errors.
  * @version 0.1
  * @date 2022-04-22
  * 
@@ -10,7 +11,7 @@
  */
 
 /* -------------------------- global variables ----------------------------- */
-int a;
+int a = 5;
 /* ------------------------------------------------------------------------- */
 
 /* ------------------------- Functions prototypes -------------------------- */
@@ -40,18 +41,16 @@ main() {
     /* ------------------------- 
     Local Variables declaration 
     ------------------------- */
-    const int x;
-    int y;
-    int looper1;
-    float z;
-    const int x_init = 2022;
-    int y_init = 2022;
-    float z_init = 2022;
+    const int x = 1;
+    int y = 1;
+    int looper1 = 1;
+    float z = 1;
     
-    int a1; int a2; int a3; int a4; int a5;
+    int a1 = 1; int a2 = 1; int a3 = 1; int a4 = 1;
 
     /* Char */
     int c = 'c';
+    c = c + x;
     
     /* ------------------------- 
     Business logic
@@ -144,8 +143,8 @@ main() {
 
     /* blocks */
     {
-        int a;
-        a = 1;
+        int a = 2;
+        a = 1 + a;
     }
     
     /* Function Calls 
@@ -157,7 +156,5 @@ main() {
 
     return 0;
 }
-
-int real;
 
 /* ------------------------------------------------------------------------- */

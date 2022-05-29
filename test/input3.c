@@ -1,23 +1,15 @@
-int x;
-int y;
-void f(int x, int a) {
-  int b;
-  int a = 3;
-  y = x + a*b;
-  if(y < 5) {
-    int a;
-    y = x + a*b;
-  }
-  y = x + a*b;
-  a *= a;
-  switch(a){
-    case 1: {
-      a *= a;
-    }
-    break;
-    default: {
-      a *= a;
-    }
-    break;
-  }
+/**
+ * @file input3.c
+ * @author Mohamed Hassanin Mohamed
+ * @brief This is a test file for undefined symbol.
+ * @version 0.1
+ * @date 2022-05-29
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
+int main(int a) {
+  const int a; 
+  c = a + 1;
 }

@@ -1,7 +1,7 @@
 /**
  * @file input2.c
  * @author Mohamed Hassanin Mohamed
- * @brief This is a test file to test my ANSI C parser and lexer.
+ * @brief This is a test file for warnings.
  * @version 0.1
  * @date 2022-04-27
  * 
@@ -10,14 +10,11 @@
  */
 
 const int a; /* uninitalized */
-const int b; /* uninitalized */
+const int b; /* uninitalized + unused */
 int main(int a) {
-  const int a; /* Shadowing + uninitalized */
-  a = 3; /* assignment of read-only variable*/
+  const int a; /* Shadowing + uninitalized + unused */
   {
-    int a = 2; /* another shadowing + initialized + used */
-    a = b + 2;
-    a = a + 2;
-    a = c + 2; /* undefined */
+    int a; /* another shadowing + uninitialized + used */
+    a = a + 2; 
   }
 }
