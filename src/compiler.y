@@ -54,8 +54,10 @@
 /* -------------------------- global variables ----------------------------- */
 static Node* gParseTree;
 static Node* gAST;
-static SymbolTable* gSymbolTable = new SymbolTable();
-static	std::ofstream st_fd;
+static std::ofstream st_fd;
+static std::ofstream wr_fd;
+static std::ofstream er_fd;
+static SymbolTable* gSymbolTable = new SymbolTable(wr_fd);
 
 /* ------------------------------------------------------------------------- */
 
@@ -73,6 +75,8 @@ void yyctor (void);
 Node* getParseTree ();
 Node* getAST();
 void insertVariable(string, Datatype, bool, bool);
+std::ofstream& getErrorFd ();
+
 /* ------------------------------------------------------------------------- */
 %}
 %type <TreeNode> constant identifier
@@ -118,6 +122,7 @@ identifier
 				temp->setIsUsed(true);
 				if(!(temp->getIsInitialized())) {
 					cout << "[WARNING]: @ line " << line << " " << $1.name << " used before initialized." << std::endl;
+					wr_fd << "[WARNING]: @ line " << line << " " << $1.name << " used before initialized." << std::endl;
 				}
 				$$.ASTnd = new Identifier($1.name, temp->getDatatype());
 			}
@@ -662,7 +667,7 @@ UIF
 start_block 
 	: '{' { 
 		$$.nd = new Node("{"); 
-		gSymbolTable = new SymbolTable(gSymbolTable);
+		gSymbolTable = new SymbolTable(gSymbolTable, wr_fd);
 	}
 	;
 end_block 
@@ -922,7 +927,10 @@ yydtor () {
 
 	st_fd.close();
 	std::cout << "[INFO]: Finish Writing symtable.dot file." << std::endl;
-
+	wr_fd.close();
+	std::cout << "[INFO]: Finish Writing warnings.txt file." << std::endl;
+	er_fd.close();
+	std::cout << "[INFO]: Finish Writing errors.txt file." << std::endl;
 }
 
 /**
@@ -946,6 +954,11 @@ yyctor (void) {
 			"<td bgcolor='#ffcccc'>type</td>\n"
 		"</tr>\n"
 	;
+
+	std::cout << "[INFO]: Start Writing warnings.txt file..." << std::endl;
+	wr_fd.open("warnings.txt");
+	std::cout << "[INFO]: Start Writing errors.txt file..." << std::endl;
+	er_fd.open("errors.txt");
 }
 
 Node* getParseTree ()
@@ -974,6 +987,10 @@ insertVariable(string name, Datatype dt, bool isConst, bool isInitialized)
 		gSymbolTable->insert(name, sym);
 		sym->print(st_fd);
 	}
+}
+
+std::ofstream& getErrorFd () {
+	return er_fd;
 }
 /* ------------------------------------------------------------------------- */
 

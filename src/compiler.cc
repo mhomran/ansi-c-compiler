@@ -22,6 +22,8 @@ void yydtor (void);
 void yyctor (void);
 Node* getParseTree ();
 Node* getAST ();
+std::ofstream& getErrorFd ();
+
 /* ------------------------------------------------------------------------- */
 
 /* ------------------------- Functions Definitions ------------------------- */
@@ -63,9 +65,11 @@ main(void)
       std::cout << "[INFO]: Finish Writing output.txt file." << std::endl;
     }
   }
-  catch(std::string x)
+  catch(std::string error)
   {
-    std::cout << x;
+    std::ofstream& er_fd = getErrorFd();
+    std::cout << error;
+    er_fd << error;
   }
 	yydtor();
   

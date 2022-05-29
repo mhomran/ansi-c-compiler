@@ -9,19 +9,22 @@
  * 
  */
 
-#include "table.hh"
 #include <iostream>
+#include <fstream>
+#include "table.hh"
 using namespace std;
 
-SymbolTable::SymbolTable()
+SymbolTable::SymbolTable(std::ofstream& fd)
 : prev{NULL}
-, level{currLevel} {
+, level{currLevel}
+, wr_fd{fd} {
   currLevel++;
 }
 
-SymbolTable::SymbolTable(SymbolTable* prev) 
+SymbolTable::SymbolTable(SymbolTable* prev, std::ofstream& fd) 
 : prev{prev}
-, level{currLevel} {
+, level{currLevel}
+, wr_fd{fd} {
   currLevel++;
 }
 
@@ -32,7 +35,9 @@ SymbolTable::~SymbolTable() {
     string symName = symbol.first;
     VarSymbol* temp = dynamic_cast<VarSymbol*>(sym);
     if(NULL != temp && !(temp->getIsUsed())) {
-      cout << endl << "[WARNING]: @ line " << sym->getLine() << " " 
+      wr_fd << "[WARNING]: @ line " << sym->getLine() << " " 
+      << symName << " is Unsed." << endl;
+      cout << "[WARNING]: @ line " << sym->getLine() << " " 
       << symName << " is Unsed." << endl;
     }
     delete sym;

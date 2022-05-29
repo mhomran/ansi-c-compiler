@@ -13,6 +13,7 @@
 
 #include <map>
 #include <string>
+#include <fstream>
 #include "../sym/sym.hh"
 #include "../sym/var_sym/var_sym.hh"
 
@@ -25,9 +26,11 @@ class SymbolTable {
   SymbolTable* prev;
   int level;
 
+  std::ofstream& wr_fd;
+
   public:
-    SymbolTable();
-    SymbolTable(SymbolTable* prev);
+    SymbolTable(std::ofstream& fd);
+    SymbolTable(SymbolTable* prev, std::ofstream& fd);
     ~SymbolTable();
     
     Symbol* LookUp(string);

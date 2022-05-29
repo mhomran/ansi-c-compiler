@@ -26,6 +26,22 @@ A simplified compiler for C language 89 which is known as ANSI C.
 - run `make show_ast INPUT=file_name.c` Replace
   `file_name.c` with the name of the test file.
 
+# How to run testcases and show the generated symbol table
+
+- run `make show_sym INPUT=file_name.c` Replace
+  `file_name.c` with the name of the test file.
+
+# How to run testcases and show all graphs
+
+- run `make show_all INPUT=file_name.c` Replace
+  `file_name.c` with the name of the test file.
+
+# How to run testcases using the GUI
+
+- `cd` to the gui folder
+- run `python compiler.py`
+- press `browse and compile`, then choose the test file.
+
 # References
 
 1. <a href="https://www.yodaiken.com/wp-content/uploads/2021/05/ansi-iso-9899-1990-1.pdf"> ANSI C specifications </a>
