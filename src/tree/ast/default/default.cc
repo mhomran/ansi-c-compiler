@@ -20,5 +20,6 @@ Default::Default(string name) : Node(name) {
 
 void 
 Default::generate(std::ofstream& fd, std::vector<std::string>& stack) {
+  stack.pop_back();
   Node::generate(fd, stack);
 }

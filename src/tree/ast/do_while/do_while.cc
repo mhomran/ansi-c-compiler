@@ -23,8 +23,11 @@ void
 DoWhile::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   auto children = Node::getChildren();
   int lbl1 = Label::generateLabel();
+  std::string arg1;
+  
   fd << "L" << lbl1 << ":" << endl;
   children[0]->generate(fd, stack); //body
   children[1]->generate(fd, stack); //expression
-  fd << "JMPT " << "L" << lbl1 << endl;
+  if(!stack.empty()) { arg1 = stack.back(); stack.pop_back(); }
+  fd << "JMPT " << arg1 << " " << "L" << lbl1 << endl;  
 }

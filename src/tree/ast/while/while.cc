@@ -23,10 +23,13 @@ void
 While::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   int lbl1 = Label::generateLabel();
   int lbl2 = Label::generateLabel();
+  std::string arg1;
+
   fd << "L" << lbl1 << ":" << endl;
   auto children = Node::getChildren();
   children[0]->generate(fd, stack); //expression
-  fd << "JMPF " << "L" << lbl2 << endl;
+  if(!stack.empty()) { arg1 = stack.back(); stack.pop_back(); }
+  fd << "JMPF " << arg1 << " " << "L" << lbl2 << endl;  
   children[1]->generate(fd, stack); //body
   fd << "JMP " << "L" << lbl1 << endl; //back to the expression
   fd << "L" << lbl2 << ":" << endl;

@@ -21,9 +21,12 @@ Uif::generate(std::ofstream& fd, std::vector<std::string>& stack) {
   auto children = Node::getChildren();
   int lbl2 = Label::generateLabel();
   size_t i;
+  std::string arg1;
 
   children[0]->generate(fd, stack); //expression
-  fd << "JMPF " << "L" << lbl2 << endl;
+  if(!stack.empty()) { arg1 = stack.back(); stack.pop_back(); }
+  fd << "JMPF " << arg1 << " " << "L" << lbl2 << endl;
+  
   children[1]->generate(fd, stack); //if body
   fd << "L" << lbl2 << ":" << endl;
 
