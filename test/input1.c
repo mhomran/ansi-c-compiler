@@ -80,7 +80,7 @@ main() {
     z = z == z;
     z = z != z;
     z = !z;
-    z = (a1 < a2) && (a3 == a4);
+    z = (a1 < a2) && (a3 || a4);
 
     /* Arithmetic operators */
     y = z + y;
@@ -136,14 +136,14 @@ main() {
         break;
 
         default: {
-            if(a == a) a = a;
+            if(y == z) a = a;
         }
         break;
     }
 
     /* blocks */
     {
-        int a = 2;
+        float a = 2;
         a = 1 + a;
     }
     

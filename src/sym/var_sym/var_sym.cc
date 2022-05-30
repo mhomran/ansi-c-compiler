@@ -55,6 +55,8 @@ void VarSymbol::print(ofstream&fd) {
   Symbol::print(fd);
   fd <<
   "<td>" << "var" << "</td>\n"
+  "<td>" << (isConst ? "const " : "") <<
+  Datatype_ToString(datatype) << "</td>\n"
   "</tr>\n"
   ;
 }

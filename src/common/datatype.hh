@@ -10,6 +10,8 @@
  */
 
 #pragma once
+#include <string>
+using namespace std;
 
 enum class Datatype { 
   VOID,
@@ -20,3 +22,6 @@ enum class Datatype {
   FLOAT,
   DOUBLE
  };
+
+string Datatype_ToString(Datatype e);
+

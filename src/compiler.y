@@ -952,6 +952,7 @@ yyctor (void) {
 			"<td bgcolor='#ffcccc'>scope</td>\n"
 			"<td bgcolor='#ffcccc'>line</td>\n"
 			"<td bgcolor='#ffcccc'>type</td>\n"
+			"<td bgcolor='#ffcccc'>other</td>\n"
 		"</tr>\n"
 	;
 
